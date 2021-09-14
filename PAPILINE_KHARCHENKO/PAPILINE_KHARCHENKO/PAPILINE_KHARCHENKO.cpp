@@ -31,13 +31,22 @@ void PrintPipe(pipe &pipe) {
 
 }
 
-int main()
-{
+pipe AddPipe() {
+
     pipe pipe1;
     pipe1.id = 1;
     cout << "Enter diametr: ";
     cin >> pipe1.diametr;
+    return pipe1;
+
+}
+
+int main()
+{
+    pipe pipe1;
+    pipe1 = AddPipe();
     PrintPipe(pipe1);
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
