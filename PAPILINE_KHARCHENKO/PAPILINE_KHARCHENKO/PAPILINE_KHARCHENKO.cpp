@@ -9,7 +9,7 @@ struct pipe {
     int id;
     float length;
     int diametr;
-    bool isInRepair;
+    bool isInRepair = false;
 
 };
 
@@ -29,7 +29,7 @@ void PrintPipe(pipe &pipe) {
         << "ID: " << pipe.id << endl
         << "Diametr: " << pipe.diametr << endl;
 
-}
+}                                           
 
 pipe AddPipe() {
 
@@ -43,8 +43,7 @@ pipe AddPipe() {
 
 int main()
 {
-    pipe pipe1;
-    pipe1 = AddPipe();
+    pipe pipe1 = AddPipe();
     PrintPipe(pipe1);
 
 }
