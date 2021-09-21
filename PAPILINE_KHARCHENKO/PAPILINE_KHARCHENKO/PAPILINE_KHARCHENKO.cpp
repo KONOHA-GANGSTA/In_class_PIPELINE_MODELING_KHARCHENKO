@@ -32,6 +32,11 @@ void printLine() {
     cout << endl;
 }
 
+void scroll() {
+    for (int i = 0; i <= 5; i++)
+        cout << endl;
+}
+
 void printMenu() {
     cout << "1. Добавить трубу" << endl;
     cout << "2. Добавить КС" << endl;
@@ -45,13 +50,45 @@ void printMenu() {
     cout << endl;
 }
 
-void printPipe(pipe &pipe) {
+void printHeadline(pipe pipe) {
 
-    cout << endl
-        << "ID: " << pipe.id << endl
-        << "Diametr: " << pipe.diametr << endl;
+    printLine();
+    cout << "|\tId"
+        << "\t|\tДлина"
+        << "\t|\tДиаметр"
+        << "\t|\tВ ремонте"
+        << "\t|" << endl;
+}
 
-}                             
+void printHeadline(cs cs) {
+
+    printLine();
+    cout << "|\tId"
+        << "\t|\tИмя"
+        << "\t|\tЦеха"
+        << "\t|\tЦеха в работе"
+        << "\t|\tЭффективность"
+        << "\t|" << endl;
+}
+
+void printPipe(pipe pipe) {
+    
+    cout << "|\t" << pipe.id 
+        << "\t|\t" << pipe.length
+        << "\t|\t" << pipe.diametr
+        << "\t|\t" << pipe.isInRepair
+        << "\t\t|" << endl;
+}
+
+void printCs(cs cs) {
+
+    cout << "|\t" << cs.id
+        << "\t|\t" << cs.name
+        << "\t|\t" << cs.workShopNumber
+        << "\t|\t\t" << cs.activeWorkshopNumber
+        << "\t|\t\t" << cs.efficiency
+        << "\t|" << endl;
+}
 
 int getInt(){
 	
@@ -116,26 +153,52 @@ bool confirm() {
 
 }
 
-pipe addPipe() {
+bool isIdOcupied(vector <pipe> pipes, int id) {
+    if (pipes.size() == 0)
+        return false;
+    for (int i = 0; i <= pipes.size()-1; i++) {
+        if (pipes[i].id == id)
+            return true;
+    }
+    return false;
+}
+
+bool isIdOcupied(vector <cs> css, int id) {
+    if (css.size() == 0)
+        return false;
+    for (int i = 0; i <= css.size() - 1; i++) {
+        if (css[i].id == id)
+            return true;
+    }
+    return false;
+}
+
+pipe addPipe(vector <pipe> pipes) {
 
     cout << "[Добавление трубы]" << endl;
     pipe pipe;
-    pipe.id = 1;
+    do pipe.id = rand();
+    while (isIdOcupied(pipes, pipe.id));
     cout << "Введите длину: ";
     pipe.length = getDouble();
     cout << "Введите диаметр: ";
     pipe.diametr = getInt();
     cout << "Сейчас в ремонте? (Y/N): ";
     pipe.isInRepair = confirm();
+    cout << "[Труба добавлена]" << endl;
+    printHeadline(pipe);
+    printLine();
+    printPipe(pipe);
+    printLine();
     return pipe;
-
 }
 
-cs addCs() {
+cs addCs(vector <cs> css) {
 
     cout << "[Добавление КС]" << endl;
     cs cs;
-    cs.id = 1;
+    do cs.id = rand();
+    while (isIdOcupied(css, cs.id));
     cout << "Введите имя: ";
     string name;
     cin >> name;
@@ -152,7 +215,26 @@ cs addCs() {
     }
     cout << "Введите показатель эффективности: ";
     cs.efficiency = getInt();
+    cout << "[Компрессорная станция добавлена]" << endl;
+    printHeadline(cs);
+    printLine();
+    printCs(cs);
+    printLine();
     return cs;
+}
+
+pipe getPipe(vector <pipe> pipes, int id) {
+
+    for (int i = 0; i <= pipes.size() - 1; i++)
+        if (pipes[i].id == i)
+            return pipes[i];
+}
+
+cs getCs(vector <cs> css, int id) {
+
+    for (int i = 0; i <= css.size() - 1; i++)
+        if (css[i].id == i)
+            return css[i];
 }
 
 int main()
@@ -176,12 +258,38 @@ int main()
             return 0;
             break;
         case 1: // Добавление трубы
-            pipes.push_back(addPipe());
+            pipes.push_back(addPipe(pipes));
             break;
         case 2: // Добавление КС
-            css.push_back(addCs());
+            css.push_back(addCs(css));
             break;
         case 3: // Просмотр элементов;
+            if (pipes.size() != 0) {
+                cout << "[Трубы]" << endl;
+                printHeadline(pipes[0]);
+                printLine();
+                for (int i = 0; i <= pipes.size() - 1; i++) {
+                    printPipe(pipes[i]);
+                    printLine();
+                }
+            }
+
+            cout << "\n\n\n";
+
+            if (css.size() != 0) {
+                cout << "[Компрессорные станции]" << endl;
+                printHeadline(css[0]);
+                printLine();
+                for (int i = 0; i <= css.size() - 1; i++) {
+                    printCs(css[i]);
+                    printLine();
+                }
+            }
+
+            if (pipes.size() == 0 && css.size() == 0) {
+                cout << "[Объектов нет]" << endl;
+            }
+
             break;
         case 4: // Редактирование трубы;
             break;
@@ -196,6 +304,7 @@ int main()
             break;
         }
         printLine();
+        scroll();
     }
 
 }
