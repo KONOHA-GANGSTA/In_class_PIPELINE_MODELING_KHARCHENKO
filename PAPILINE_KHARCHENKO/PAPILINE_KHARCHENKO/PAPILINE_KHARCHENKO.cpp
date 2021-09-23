@@ -1,7 +1,8 @@
 
 #include <iostream>
 #include <vector>
-#include <conio.h>
+#include <fstream>
+#include <string>
 using namespace std;
 
 struct pipe {
@@ -85,9 +86,17 @@ void printCs(cs cs) {
     cout << "|\t" << cs.id
         << "\t|\t" << cs.name
         << "\t|\t" << cs.workShopNumber
-        << "\t|\t\t" << cs.activeWorkshopNumber
-        << "\t|\t\t" << cs.efficiency
-        << "\t|" << endl;
+        << "\t|\t" << cs.activeWorkshopNumber
+        << "\t\t|\t" << cs.efficiency
+        << "\t\t|" << endl;
+}
+
+string DotToComma(string str) {
+
+    if (str.find(".") != string::npos)
+        return str.replace(str.find("."), 1, ",");
+    else return str;
+
 }
 
 int getInt(){
@@ -300,6 +309,83 @@ cs editCs(cs cs) {
 
 }
 
+void save(vector <pipe> pipes, vector <cs> css) {
+
+    ofstream file;
+    file.open("objects.txt");
+    if (file.good()) {
+
+        if (pipes.size() > 0) {
+            for (int i = 0; i <= pipes.size() - 1; i++) {
+                file << "pipe" << endl
+                    << pipes[i].id << endl
+                    << pipes[i].length << endl
+                    << pipes[i].diametr << endl
+                    << pipes[i].isInRepair << endl;
+            }
+        }
+
+        if (css.size() > 0) {
+            for (int i = 0; i <= css.size() - 1; i++) {
+                file << "cs" << endl
+                    << css[i].id << endl
+                    << css[i].name << endl
+                    << css[i].workShopNumber << endl
+                    << css[i].activeWorkshopNumber << endl
+                    << css[i].efficiency << endl;
+            }
+        }
+        file.close();
+        cout << "[Данные сохранены]" << endl;
+    }
+}
+
+void load(vector <pipe>& pipes, vector <cs>& css) {
+
+    pipes.resize(0);
+    css.resize(0);
+    ifstream file;
+    file.open("objects.txt", ios::in);
+    if (file.good()) {
+        while (!file.eof()) {
+            string str;
+            getline(file, str);
+            if (str == "pipe") {
+                pipe pipe;
+                string value;
+                getline(file, value);
+                pipe.id = stoi(value);
+                getline(file, value);
+                pipe.length = stod(DotToComma(value));
+                getline(file, value);
+                pipe.diametr = stoi(value);
+                getline(file, value);
+                (value == "1") ? pipe.isInRepair = true : pipe.isInRepair = false;
+                pipes.push_back(pipe);
+            }
+
+            if (str == "cs") {
+                cs cs;
+                string value;
+                getline(file, value);
+                cs.id = stoi(value);
+                getline(file, value);
+                cs.name = value;
+                getline(file, value);
+                cs.workShopNumber = stoi(value);
+                getline(file, value);
+                cs.activeWorkshopNumber = stoi(value);
+                getline(file, value);
+                cs.efficiency = stoi(value);
+                css.push_back(cs);
+            }
+        }
+        cout << "[Данные загружены]" << endl;
+    }
+    file.close();
+}
+
+
 int main()
 {   
     setlocale(LC_ALL, "Russian");
@@ -308,6 +394,9 @@ int main()
     pipe checkPipe;
     vector <cs> css;
     cs checkCs;
+
+    load(pipes,css);
+
     cout << "\t\t\tДобро пожаловать в систему моделирования трубопроводного транспорта" << endl;
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
 
@@ -374,8 +463,10 @@ int main()
                 cout << "[Компрессорных станций нет]" << endl;
             break;
         case 6: // Сохранить
+            save(pipes,css);
             break;
         case 7: // Загрузить
+            load(pipes, css);
             break;
         default: 
             cout << "[Такого действия не существует]" << endl;
@@ -384,5 +475,4 @@ int main()
         printLine();
         scroll();
     }
-
 }
