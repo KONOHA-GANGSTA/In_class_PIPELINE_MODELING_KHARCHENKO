@@ -51,7 +51,7 @@ void printMenu() {
     cout << endl;
 }
 
-void printHeadline(pipe pipe) {
+void printHeadline(const pipe& pipe) {
 
     printLine();
     cout << "|\tId"
@@ -61,7 +61,7 @@ void printHeadline(pipe pipe) {
         << "\t|" << endl;
 }
 
-void printHeadline(cs cs) {
+void printHeadline(const cs& cs) {
 
     printLine();
     cout << "|\tId"
@@ -72,7 +72,7 @@ void printHeadline(cs cs) {
         << "\t|" << endl;
 }
 
-void printPipe(pipe pipe) {
+void printPipe(const pipe& pipe) {
     
     cout << "|\t" << pipe.id
         << "\t|\t" << pipe.length
@@ -81,7 +81,7 @@ void printPipe(pipe pipe) {
         << "\t\t|" << endl;
 }
 
-void printCs(cs cs) {
+void printCs(const cs& cs) {
 
     cout << "|\t" << cs.id
         << "\t|\t" << cs.name
@@ -91,7 +91,7 @@ void printCs(cs cs) {
         << "\t\t|" << endl;
 }
 
-string DotToComma(string str) {
+string DotToComma(string& str) {
 
     if (str.find(".") != string::npos)
         return str.replace(str.find("."), 1, ",");
@@ -162,29 +162,29 @@ bool confirm() {
 
 }
 
-bool isIdOcupied(vector <pipe> pipes, int id) {
+bool isIdOcupied(const vector <pipe>& pipes, int id) {
     if (pipes.size() == 0)
         return false;
-    for (int i = 0; i <= pipes.size()-1; i++) {
-        if (pipes[i].id == id)
+    for (pipe i: pipes) {
+        if (i.id == id)
             return true;
     }
     return false;
 }
 
-bool isIdOcupied(vector <cs> css, int id) {
+bool isIdOcupied(const vector <cs>& css, int id) {
     if (css.size() == 0)
         return false;
-    for (int i = 0; i <= css.size() - 1; i++) {
-        if (css[i].id == id)
+    for (cs i : css) {
+        if (i.id == id)
             return true;
     }
     return false;
 }
 
-int getIndex(vector <pipe> pipes, pipe pipe) {
+int getIndex(const vector <pipe>& pipes, pipe pipe) {
     
-    for (int i =0; i <= pipes.size() - 1; i++) {
+    for (int i =0; i < pipes.size(); i++) {
         if (pipes[i].id == pipe.id)
             return i;
         else
@@ -192,9 +192,9 @@ int getIndex(vector <pipe> pipes, pipe pipe) {
     }
 }
 
-int getIndex(vector <cs> css, cs cs) {
+int getIndex(const vector <cs>& css, cs cs) {
 
-    for (int i = 0; i <= css.size() - 1; i++) {
+    for (int i = 0; i < css.size(); i++) {
         if (css[i].id == cs.id)
             return i;
         else
@@ -202,7 +202,7 @@ int getIndex(vector <cs> css, cs cs) {
     }
 }
 
-pipe addPipe(vector <pipe> pipes) {
+pipe addPipe(const vector <pipe>& pipes) {
 
     cout << "[Добавление трубы]" << endl;
     pipe pipe;
@@ -215,24 +215,17 @@ pipe addPipe(vector <pipe> pipes) {
     cout << "Сейчас в ремонте? (Y/N): ";
     pipe.isInRepair = confirm();
     cout << "[Труба добавлена]" << endl;
-    printHeadline(pipe);
-    printLine();
-    printPipe(pipe);
-    printLine();
     return pipe;
 }
 
-cs addCs(vector <cs> css) {
+cs addCs(const vector <cs>& css) {
 
     cout << "[Добавление КС]" << endl;
     cs cs;
     do cs.id = rand();
     while (isIdOcupied(css, cs.id));
     cout << "Введите имя: ";
-    string name;
-    cin >> name;
-    cin.ignore(32767, '\n');
-    cs.name = name;
+    getline(cin,cs.name);
     cout << "Введите количество цехов: ";
     cs.workShopNumber = getInt();
     cout << "Введите количество активных цехов: ";
@@ -245,52 +238,43 @@ cs addCs(vector <cs> css) {
     cout << "Введите показатель эффективности: ";
     cs.efficiency = getInt();
     cout << "[Компрессорная станция добавлена]" << endl;
-    printHeadline(cs);
-    printLine();
-    printCs(cs);
-    printLine();
     return cs;
 }
 
-pipe getPipe(vector <pipe> pipes, int id) {
+pipe& getPipe( vector <pipe> pipes, int id) {
     
     while (true) {
-        for (int i = 0; i <= pipes.size() - 1; i++)
-            if (pipes[i].id == id)
-                return pipes[i];
+        for (pipe i : pipes)
+            if (i.id == id)
+                return i;
         cout << "[Трубы с таким id несуществует]" << endl;
         cout << "Введите новый id: ";
         id = getInt();
     }
 }
 
-cs getCs(vector <cs> css, int id) {
+cs& getCs(vector <cs> css, int id) {
 
     while (true) {
-        for (int i = 0; i <= css.size() - 1; i++)
-            if (css[i].id == id)
-                return css[i];
+        for (cs i : css)
+            if (i.id == id)
+                return i;
         cout << "[КС с таким id несуществует]" << endl;
         cout << "Введите новый id: ";
         id = getInt();
     }
 }
 
-pipe editPipe(pipe pipe) {
+void editPipe(pipe& pipe) {
 
     cout << "[Редактирование трубы]" << endl
         << "Труба с id " << pipe.id << " в ремонте?(Y/N): ";
     pipe.isInRepair = confirm();
     cout << "[Изменения внесены]" << endl;
-    printHeadline(pipe);
-    printLine();
-    printPipe(pipe);
-    printLine();
-    return pipe;
     
 }
 
-cs editCs(cs cs) {
+void editCs(cs& cs) {
 
     cout << "[Редактирование компрессорной станции]" << endl
         << "КС с id " << cs.id << " (" << cs.name << ")" << endl;
@@ -301,38 +285,33 @@ cs editCs(cs cs) {
     cout << "Введите оценку эффективности: ";
     cs.efficiency = getInt();
     cout << "[Изменения внесены]" << endl;
-    printHeadline(cs);
-    printLine();
-    printCs(cs);
-    printLine();
-    return cs;
-
 }
 
 void save(vector <pipe> pipes, vector <cs> css) {
-
+    if ((pipes.size() == 0) && (css.size() == 0))
+        return;
     ofstream file;
     file.open("objects.txt");
     if (file.good()) {
+        {
 
-        if (pipes.size() > 0) {
-            for (int i = 0; i <= pipes.size() - 1; i++) {
+            for (pipe i : pipes) {
                 file << "pipe" << endl
-                    << pipes[i].id << endl
-                    << pipes[i].length << endl
-                    << pipes[i].diametr << endl
-                    << pipes[i].isInRepair << endl;
+                    << i.id << endl
+                    << i.length << endl
+                    << i.diametr << endl
+                    << i.isInRepair << endl;
             }
         }
 
-        if (css.size() > 0) {
-            for (int i = 0; i <= css.size() - 1; i++) {
+        {
+            for (cs i : css) {
                 file << "cs" << endl
-                    << css[i].id << endl
-                    << css[i].name << endl
-                    << css[i].workShopNumber << endl
-                    << css[i].activeWorkshopNumber << endl
-                    << css[i].efficiency << endl;
+                    << i.id << endl
+                    << i.name << endl
+                    << i.workShopNumber << endl
+                    << i.activeWorkshopNumber << endl
+                    << i.efficiency << endl;
             }
         }
         file.close();
@@ -342,7 +321,7 @@ void save(vector <pipe> pipes, vector <cs> css) {
 
 void load(vector <pipe>& pipes, vector <cs>& css) {
 
-    pipes.resize(0);
+    pipes.clear();
     css.resize(0);
     ifstream file;
     file.open("objects.txt", ios::in);
@@ -391,9 +370,7 @@ int main()
     setlocale(LC_ALL, "Russian");
 
     vector <pipe> pipes;
-    pipe checkPipe;
     vector <cs> css;
-    cs checkCs;
 
     load(pipes,css);
 
@@ -412,11 +389,17 @@ int main()
             break;
         case 1: // Добавление трубы
             pipes.push_back(addPipe(pipes));
+            printLine();
             break;
         case 2: // Добавление КС
             css.push_back(addCs(css));
+            printLine();
             break;
         case 3: // Просмотр элементов;
+            if (pipes.size() == 0 && css.size() == 0) {
+                cout << "[Объектов нет]" << endl;
+                break;
+            }           
             if (pipes.size() != 0) {
                 cout << "[Трубы]" << endl;
                 printHeadline(pipes[0]);
@@ -439,16 +422,12 @@ int main()
                 }
             }
 
-            if (pipes.size() == 0 && css.size() == 0) {
-                cout << "[Объектов нет]" << endl;
-            }
-
             break;
         case 4: // Редактирование трубы;
             if (pipes.size() > 0) {
                 cout << "Введите id трубы: ";
-                checkPipe = getPipe(pipes, getInt());
-                pipes[getIndex(pipes, checkPipe)] = editPipe(checkPipe);
+                auto checkPipe = getPipe(pipes, getInt());
+                editPipe(checkPipe);
             }
             else
                 cout << "[Труб нет]" << endl;
@@ -456,8 +435,8 @@ int main()
         case 5: // Редактирование КС
             if (css.size() > 0) {
                 cout << "Введите id компрессорной станции: ";
-                checkCs = getCs(css, getInt());
-                css[getIndex(css, checkCs)] = editCs(checkCs);
+                auto checkCs = getCs(css, getInt());
+                editCs(checkCs);
             }
             else
                 cout << "[Компрессорных станций нет]" << endl;
