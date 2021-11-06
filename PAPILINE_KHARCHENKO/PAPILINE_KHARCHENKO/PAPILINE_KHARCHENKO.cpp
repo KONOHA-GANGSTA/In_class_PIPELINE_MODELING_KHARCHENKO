@@ -61,7 +61,7 @@ void printPipeHead() {
         << "\t|" << endl;
 }
 
-void printHeadline(const cs& cs) {
+void printCsHead() {
 
     printLine();
     cout << "|\tId"
@@ -107,7 +107,6 @@ int getInt(){
 		cin >> number;
         if (cin.fail() || number < 0)
         {   
-
             cin.clear(); 
             cin.ignore(32767, '\n');
             cout << "[Значение некорректно]" << endl
@@ -124,7 +123,6 @@ int getInt(){
 double getDouble() {
 
     while (true) {
-
         double number;
         cin >> number;
         if (cin.fail() || number <0)
@@ -200,7 +198,7 @@ cs addCs(int& id) {
     return cs;
 }
 
-void editPipe(pipe pipe) {
+void editPipe(pipe& pipe) {
 
     cout << "[Редактирование трубы]" << endl
         << "Труба с id " << pipe.id << " в ремонте?(Y/N): ";
@@ -222,11 +220,28 @@ void editCs(cs& cs) {
     cout << "[Изменения внесены]" << endl;
 }
 
+string getFileName() {
+    string fileName;
+    string incorrectSymbols[16] = {" ","~","#","%","&","*","{","}","/",":","<",">","?","+","|","."};
+    while (true) {
+        cout << "Введите имя файла:" << endl;
+        getline(cin, fileName);
+        for (string i : incorrectSymbols) {
+            while (fileName.find(i) != string::npos) {
+                fileName.erase(fileName.find(i),1);
+            }
+        }
+        if (fileName == "") continue;
+        cout << endl;
+        return fileName;
+    }
+}
+
 void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     if ((pipes.empty()) && (css.empty()))
         return;
     ofstream file;
-    file.open("objects.txt");
+    file.open(getFileName()+".txt");
     if (file.good()) {
         {
             for (auto i : pipes) {
@@ -258,7 +273,7 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     pipes.clear();
     css.clear();
     ifstream file;
-    file.open("objects.txt", ios::in);
+    file.open(getFileName()+".txt", ios::in);
     if (file.good()) {
         while (!file.eof()) {
             string str;
@@ -298,9 +313,8 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     file.close();
 }
 
-
 int main()
-{   
+{
     setlocale(LC_ALL, "Russian");
 
     unordered_map <int, pipe> pipes;
@@ -312,10 +326,10 @@ int main()
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
 
     while (true) {
-       
+
         printMenu();
         cout << "Выберите действие: ";
-        
+
         switch (getInt())
         {
         case 0: // Выход
@@ -332,15 +346,15 @@ int main()
             printLine();
             break;
         case 3: // Просмотр элементов;
-            if (pipes.empty() && pipes.empty()) {
+            if (pipes.empty() && css.empty()) {
                 cout << "[Объектов нет]" << endl;
                 break;
-            }           
+            }
             if (!pipes.empty()) {
                 cout << "[Трубы]" << endl;
                 printPipeHead();
                 printLine();
-                for (pair<int,pipe> item : pipes) {
+                for (pair<int, pipe> item : pipes) {
                     printPipe(item.second);
                     printLine();
                 }
@@ -350,23 +364,27 @@ int main()
 
             if (!css.empty()) {
                 cout << "[Компрессорные станции]" << endl;
-                printHeadline(css[0]);
+                printCsHead();
                 printLine();
                 for (pair<int, cs> item : css) {
                     printCs(item.second);
                     printLine();
                 }
 
-            break;
+                break;
         case 4: // Редактирование трубы;
             if (!pipes.empty()) {
                 while (true) {
+                    printLine();
                     cout << "Для выхода введите 0\nВведите id трубы: ";
                     int id = getInt();
                     if (id == 0 || pipes.find(id) == pipes.end())
+                    {
+                        scroll();
                         break;
+                    }
                     else
-                    editPipe(pipes[getInt()]);
+                        editPipe(pipes[id]);
                 }
             }
             else
@@ -375,28 +393,33 @@ int main()
         case 5: // Редактирование КС
             if (!css.empty()) {
                 while (true) {
+                    printLine();
                     cout << "Для выхода введите 0\nВведите id КС: ";
                     int id = getInt();
-                    if (id == 0 || pipes.find(id) == pipes.end())
+                    if (id == 0 || css.find(id) == css.end())
+                    {
+                        scroll();
                         break;
+                    }
                     else
-                        editPipe(pipes[getInt()]);
+                        editCs(css[id]);
                 }
             }
             else
                 cout << "[Компрессорных станций нет]" << endl;
             break;
         case 6: // Сохранить
-            save(pipes,css);
+            save(pipes, css);
             break;
         case 7: // Загрузить
-           load(pipes, css);
+            load(pipes, css);
             break;
-        default: 
+        default:
             cout << "[Такого действия не существует]" << endl;
             break;
+            }
+            printLine();
+            scroll();
         }
-        printLine();
-        scroll();
     }
 }
