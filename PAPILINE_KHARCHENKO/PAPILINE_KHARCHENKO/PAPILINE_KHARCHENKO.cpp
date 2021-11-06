@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 struct pipe {
@@ -28,7 +29,6 @@ void printLine() {
 
     for (int i = 0; i <= 100; i++) {
         cout << "_";
-
     }
     cout << endl;
 }
@@ -51,7 +51,7 @@ void printMenu() {
     cout << endl;
 }
 
-void printHeadline(const pipe& pipe) {
+void printPipeHead() {
 
     printLine();
     cout << "|\tId"
@@ -106,7 +106,8 @@ int getInt(){
 		int number;
 		cin >> number;
         if (cin.fail() || number < 0)
-        {
+        {   
+
             cin.clear(); 
             cin.ignore(32767, '\n');
             cout << "[Значение некорректно]" << endl
@@ -162,52 +163,11 @@ bool confirm() {
 
 }
 
-bool isIdOcupied(const vector <pipe>& pipes, int id) {
-    if (pipes.size() == 0)
-        return false;
-    for (pipe i: pipes) {
-        if (i.id == id)
-            return true;
-    }
-    return false;
-}
-
-bool isIdOcupied(const vector <cs>& css, int id) {
-    if (css.size() == 0)
-        return false;
-    for (cs i : css) {
-        if (i.id == id)
-            return true;
-    }
-    return false;
-}
-
-int getIndex(const vector <pipe>& pipes, pipe pipe) {
-    
-    for (int i =0; i < pipes.size(); i++) {
-        if (pipes[i].id == pipe.id)
-            return i;
-        else
-            return 0;
-    }
-}
-
-int getIndex(const vector <cs>& css, cs cs) {
-
-    for (int i = 0; i < css.size(); i++) {
-        if (css[i].id == cs.id)
-            return i;
-        else
-            return 0;
-    }
-}
-
-pipe addPipe(const vector <pipe>& pipes) {
+pipe addPipe(int& id) {
 
     cout << "[Добавление трубы]" << endl;
     pipe pipe;
-    do pipe.id = rand();
-    while (isIdOcupied(pipes, pipe.id));
+    pipe.id = id;
     cout << "Введите длину: ";
     pipe.length = getDouble();
     cout << "Введите диаметр: ";
@@ -218,12 +178,11 @@ pipe addPipe(const vector <pipe>& pipes) {
     return pipe;
 }
 
-cs addCs(const vector <cs>& css) {
+cs addCs(int& id) {
 
     cout << "[Добавление КС]" << endl;
     cs cs;
-    do cs.id = rand();
-    while (isIdOcupied(css, cs.id));
+    cs.id = id;
     cout << "Введите имя: ";
     getline(cin,cs.name);
     cout << "Введите количество цехов: ";
@@ -241,31 +200,7 @@ cs addCs(const vector <cs>& css) {
     return cs;
 }
 
-pipe& getPipe( vector <pipe> pipes, int id) {
-    
-    while (true) {
-        for (pipe i : pipes)
-            if (i.id == id)
-                return i;
-        cout << "[Трубы с таким id несуществует]" << endl;
-        cout << "Введите новый id: ";
-        id = getInt();
-    }
-}
-
-cs& getCs(vector <cs> css, int id) {
-
-    while (true) {
-        for (cs i : css)
-            if (i.id == id)
-                return i;
-        cout << "[КС с таким id несуществует]" << endl;
-        cout << "Введите новый id: ";
-        id = getInt();
-    }
-}
-
-void editPipe(pipe& pipe) {
+void editPipe(pipe pipe) {
 
     cout << "[Редактирование трубы]" << endl
         << "Труба с id " << pipe.id << " в ремонте?(Y/N): ";
@@ -287,31 +222,30 @@ void editCs(cs& cs) {
     cout << "[Изменения внесены]" << endl;
 }
 
-void save(vector <pipe> pipes, vector <cs> css) {
-    if ((pipes.size() == 0) && (css.size() == 0))
+void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
+    if ((pipes.empty()) && (css.empty()))
         return;
     ofstream file;
     file.open("objects.txt");
     if (file.good()) {
         {
-
-            for (pipe i : pipes) {
+            for (auto i : pipes) {
                 file << "pipe" << endl
-                    << i.id << endl
-                    << i.length << endl
-                    << i.diametr << endl
-                    << i.isInRepair << endl;
+                    << i.second.id << endl
+                    << i.second.length << endl
+                    << i.second.diametr << endl
+                    << i.second.isInRepair << endl;
             }
         }
 
         {
-            for (cs i : css) {
+            for (auto i : css) {
                 file << "cs" << endl
-                    << i.id << endl
-                    << i.name << endl
-                    << i.workShopNumber << endl
-                    << i.activeWorkshopNumber << endl
-                    << i.efficiency << endl;
+                    << i.second.id << endl
+                    << i.second.name << endl
+                    << i.second.workShopNumber << endl
+                    << i.second.activeWorkshopNumber << endl
+                    << i.second.efficiency << endl;
             }
         }
         file.close();
@@ -319,10 +253,10 @@ void save(vector <pipe> pipes, vector <cs> css) {
     }
 }
 
-void load(vector <pipe>& pipes, vector <cs>& css) {
+void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
 
     pipes.clear();
-    css.resize(0);
+    css.clear();
     ifstream file;
     file.open("objects.txt", ios::in);
     if (file.good()) {
@@ -340,7 +274,7 @@ void load(vector <pipe>& pipes, vector <cs>& css) {
                 pipe.diametr = stoi(value);
                 getline(file, value);
                 (value == "1") ? pipe.isInRepair = true : pipe.isInRepair = false;
-                pipes.push_back(pipe);
+                pipes[pipe.id] = pipe;
             }
 
             if (str == "cs") {
@@ -356,7 +290,7 @@ void load(vector <pipe>& pipes, vector <cs>& css) {
                 cs.activeWorkshopNumber = stoi(value);
                 getline(file, value);
                 cs.efficiency = stoi(value);
-                css.push_back(cs);
+                css[cs.id] = cs;
             }
         }
         cout << "[Данные загружены]" << endl;
@@ -369,10 +303,10 @@ int main()
 {   
     setlocale(LC_ALL, "Russian");
 
-    vector <pipe> pipes;
-    vector <cs> css;
-
-    load(pipes,css);
+    unordered_map <int, pipe> pipes;
+    unordered_map <int, cs> css;
+    int pipesCount = 0;
+    int csCount = 0;
 
     cout << "\t\t\tДобро пожаловать в систему моделирования трубопроводного транспорта" << endl;
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
@@ -388,55 +322,66 @@ int main()
             return 0;
             break;
         case 1: // Добавление трубы
-            pipes.push_back(addPipe(pipes));
+            pipesCount++;
+            pipes.emplace(pipesCount, addPipe(pipesCount));
             printLine();
             break;
         case 2: // Добавление КС
-            css.push_back(addCs(css));
+            csCount++;
+            css.emplace(csCount, addCs(csCount));
             printLine();
             break;
         case 3: // Просмотр элементов;
-            if (pipes.size() == 0 && css.size() == 0) {
+            if (pipes.empty() && pipes.empty()) {
                 cout << "[Объектов нет]" << endl;
                 break;
             }           
-            if (pipes.size() != 0) {
+            if (!pipes.empty()) {
                 cout << "[Трубы]" << endl;
-                printHeadline(pipes[0]);
+                printPipeHead();
                 printLine();
-                for (int i = 0; i <= pipes.size() - 1; i++) {
-                    printPipe(pipes[i]);
+                for (pair<int,pipe> item : pipes) {
+                    printPipe(item.second);
                     printLine();
                 }
             }
 
             cout << "\n\n\n";
 
-            if (css.size() != 0) {
+            if (!css.empty()) {
                 cout << "[Компрессорные станции]" << endl;
                 printHeadline(css[0]);
                 printLine();
-                for (int i = 0; i <= css.size() - 1; i++) {
-                    printCs(css[i]);
+                for (pair<int, cs> item : css) {
+                    printCs(item.second);
                     printLine();
                 }
-            }
 
             break;
         case 4: // Редактирование трубы;
-            if (pipes.size() > 0) {
-                cout << "Введите id трубы: ";
-                auto checkPipe = getPipe(pipes, getInt());
-                editPipe(checkPipe);
+            if (!pipes.empty()) {
+                while (true) {
+                    cout << "Для выхода введите 0\nВведите id трубы: ";
+                    int id = getInt();
+                    if (id == 0 || pipes.find(id) == pipes.end())
+                        break;
+                    else
+                    editPipe(pipes[getInt()]);
+                }
             }
             else
                 cout << "[Труб нет]" << endl;
             break;
         case 5: // Редактирование КС
-            if (css.size() > 0) {
-                cout << "Введите id компрессорной станции: ";
-                auto checkCs = getCs(css, getInt());
-                editCs(checkCs);
+            if (!css.empty()) {
+                while (true) {
+                    cout << "Для выхода введите 0\nВведите id КС: ";
+                    int id = getInt();
+                    if (id == 0 || pipes.find(id) == pipes.end())
+                        break;
+                    else
+                        editPipe(pipes[getInt()]);
+                }
             }
             else
                 cout << "[Компрессорных станций нет]" << endl;
@@ -445,7 +390,7 @@ int main()
             save(pipes,css);
             break;
         case 7: // Загрузить
-            load(pipes, css);
+           load(pipes, css);
             break;
         default: 
             cout << "[Такого действия не существует]" << endl;
