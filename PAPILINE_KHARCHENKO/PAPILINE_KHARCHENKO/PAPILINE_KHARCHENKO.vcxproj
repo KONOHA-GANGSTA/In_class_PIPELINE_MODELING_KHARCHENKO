@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cs.cpp" />
     <ClCompile Include="PAPILINE_KHARCHENKO.cpp" />
     <ClCompile Include="pipe.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cs.h" />
     <ClInclude Include="pipe.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

@@ -4,18 +4,8 @@
 #include <unordered_map>
 #include "utils.h"
 #include "pipe.h"
+#include "cs.h"
 using namespace std;
-
-
-struct cs {
-
-    unsigned int id;
-    string name;
-    int workShopNumber;
-    int activeWorkshopNumber;
-    int efficiency;
-
-};
 
 void scroll() {
     for (int i = 0; i <= 5; i++)
@@ -35,62 +25,6 @@ void printMenu() {
     cout << endl;
 }
 
-void printCsHead() {
-
-    printLine();
-    cout << "|\tId"
-        << "\t|\tИмя"
-        << "\t|\tЦеха"
-        << "\t|\tЦеха в работе"
-        << "\t|\tЭффективность"
-        << "\t|" << endl;
-}
-
-void printCs(const cs& cs) {
-
-    cout << "|\t" << cs.id
-        << "\t|\t" << cs.name
-        << "\t|\t" << cs.workShopNumber
-        << "\t|\t" << cs.activeWorkshopNumber
-        << "\t\t|\t" << cs.efficiency
-        << "\t\t|" << endl;
-}
-
-cs addCs(int& id) {
-
-    cout << "[Добавление КС]" << endl;
-    cs cs;
-    cs.id = id;
-    cout << "Введите имя: ";
-    getline(cin,cs.name);
-    cout << "Введите количество цехов: ";
-    cs.workShopNumber = getInt();
-    cout << "Введите количество активных цехов: ";
-    cs.activeWorkshopNumber = getInt();
-    while (cs.activeWorkshopNumber > cs.workShopNumber) {
-        cout << "[Рабочих цехов не может быть больше, чем их всего]"
-            << endl << "Введите количество активных цехов: ";
-            cs.activeWorkshopNumber = getInt();
-    }
-    cout << "Введите показатель эффективности: ";
-    cs.efficiency = getInt();
-    cout << "[Компрессорная станция добавлена]" << endl;
-    return cs;
-}
-
-void editCs(cs& cs) {
-
-    cout << "[Редактирование компрессорной станции]" << endl
-        << "КС с id " << cs.id << " (" << cs.name << ")" << endl;
-    do {
-        cout << "Введите количество активных цехов: ";
-        cs.activeWorkshopNumber = getInt();
-    } while (cs.activeWorkshopNumber > cs.workShopNumber);
-    cout << "Введите оценку эффективности: ";
-    cs.efficiency = getInt();
-    cout << "[Изменения внесены]" << endl;
-}
-
 void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     if ((pipes.empty()) && (css.empty()))
         return;
@@ -103,12 +37,7 @@ void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
 
         {
             for (auto& i : css) {
-                file << "cs" << endl
-                    << i.second.id << endl
-                    << i.second.name << endl
-                    << i.second.workShopNumber << endl
-                    << i.second.activeWorkshopNumber << endl
-                    << i.second.efficiency << endl;
+                file << "cs" << endl << i.second;
             }
         }
         file.close();
@@ -136,17 +65,7 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css,int& pip
 
             if (str == "cs") {
                 cs cs;
-                string value;
-                getline(file, value);
-                cs.id = stoi(value);
-                getline(file, value);
-                cs.name = value;
-                getline(file, value);
-                cs.workShopNumber = stoi(value);
-                getline(file, value);
-                cs.activeWorkshopNumber = stoi(value);
-                getline(file, value);
-                cs.efficiency = stoi(value);
+                file >> cs;
                 css[cs.id] = cs;
                 csNumber++;
             }
@@ -184,7 +103,7 @@ int main()
             break;
         case 2: // Добавление КС
             csCount++;
-            css.emplace(csCount, addCs(csCount));
+            css.emplace(csCount, cs(csCount));
             printLine();
             break;
         case 3: // Просмотр элементов;
@@ -206,10 +125,10 @@ int main()
 
             if (!css.empty()) {
                 cout << "[Компрессорные станции]" << endl;
-                printCsHead();
+                cs::printHead();
                 printLine();
-                for (pair<int, cs> item : css) {
-                    printCs(item.second);
+                for (auto& item : css) {
+                    cout << item.second;
                     printLine();
                 }
 
@@ -244,7 +163,7 @@ int main()
                         break;
                     }
                     else
-                        editCs(css[id]);
+                        css[id].edit();
                 }
             }
             else
