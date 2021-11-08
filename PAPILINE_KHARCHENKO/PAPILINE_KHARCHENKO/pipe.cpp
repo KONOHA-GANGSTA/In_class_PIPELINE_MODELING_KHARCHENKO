@@ -5,12 +5,15 @@
 #include <string>
 using namespace std;
 
+unsigned int pipe::count = 0;
+
 pipe::pipe()
 {
+    pipe::count+=2;
 }
 
 
-pipe::pipe(int& id)
+pipe::pipe(unsigned int id)
 {
     cout << "[Добавление трубы]" << endl;
     this->id = id;
@@ -21,6 +24,12 @@ pipe::pipe(int& id)
     cout << "Сейчас в ремонте? (Y/N): ";
     this -> isInRepair = confirm();
     cout << "[Труба добавлена]" << endl;
+    pipe::count+=2;
+}
+
+pipe::~pipe()
+{
+    pipe::count--;
 }
 
 void pipe::edit()

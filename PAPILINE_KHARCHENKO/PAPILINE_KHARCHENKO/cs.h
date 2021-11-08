@@ -8,9 +8,10 @@ public:
     int workShopNumber;
     int activeWorkshopNumber;
     int efficiency;
+    static unsigned int count;
 
     cs();
-    cs(int& id);
+    cs(unsigned int id);
     ~cs();
 
     void edit();

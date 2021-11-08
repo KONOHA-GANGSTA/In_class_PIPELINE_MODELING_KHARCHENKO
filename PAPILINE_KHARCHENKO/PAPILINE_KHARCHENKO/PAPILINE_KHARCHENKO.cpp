@@ -31,43 +31,41 @@ void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     ofstream file;
     file.open(getFileName()+".txt");
     if (file.good()) {
-        
+        file << pipe::count << endl << cs::count << endl;
             for (auto& i : pipes)
                 file << "pipe" << endl << i.second;
 
-        {
-            for (auto& i : css) {
+            for (auto& i : css)
                 file << "cs" << endl << i.second;
-            }
-        }
+
         file.close();
         cout << "[Данные сохранены]" << endl;
     }
 }
 
-void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css,int& pipeNumber,int& csNumber) {
-    pipeNumber = 0;
-    csNumber = 0;
+void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     pipes.clear();
     css.clear();
     ifstream file;
     file.open(getFileName()+".txt", ios::in);
     if (file.good()) {
+        string str;
+        getline(file, str);
+        pipes.reserve(stoi(str));
+        getline(file, str);
+        css.reserve(stoi(str));
         while (!file.eof()) {
-            string str;
             getline(file, str);
             if (str == "pipe") {
                 pipe pipe;
                 file >> pipe;
-                pipes[pipe.id] = pipe;
-                pipeNumber++;
+                pipes.emplace(pipe.id, pipe);
             }
 
             if (str == "cs") {
                 cs cs;
                 file >> cs;
-                css[cs.id] = cs;
-                csNumber++;
+                css.emplace(cs.id, cs);
             }
         }
         cout << "[Данные загружены]" << endl;
@@ -81,8 +79,7 @@ int main()
 
     unordered_map <int, pipe> pipes;
     unordered_map <int, cs> css;
-    int pipesCount = 0;
-    int csCount = 0;
+
     cout << "\t\t\tДобро пожаловать в систему моделирования трубопроводного транспорта" << endl;
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
 
@@ -97,22 +94,21 @@ int main()
             return 0;
             break;
         case 1: // Добавление трубы
-            pipesCount++;
-            pipes.emplace(pipesCount, pipe(pipesCount));
+            pipes.emplace(pipe::count+1, pipe(pipe::count+1));
             printLine();
             break;
         case 2: // Добавление КС
-            csCount++;
-            css.emplace(csCount, cs(csCount));
+            css.emplace(cs::count+1, cs(cs::count+1));
             printLine();
             break;
         case 3: // Просмотр элементов;
+            printLine();
             if (pipes.empty() && css.empty()) {
                 cout << "[Объектов нет]" << endl;
                 break;
             }
             if (!pipes.empty()) {
-                cout << "[Трубы]" << endl;
+                cout << "[Трубы] : " << pipe::count << endl ;
                 pipe::printHead();
                 printLine();
                 for (auto& item : pipes) {
@@ -124,14 +120,14 @@ int main()
             cout << "\n\n\n";
 
             if (!css.empty()) {
-                cout << "[Компрессорные станции]" << endl;
+                cout << "[Компрессорные станции] : "<< cs::count << endl;
                 cs::printHead();
                 printLine();
                 for (auto& item : css) {
                     cout << item.second;
                     printLine();
                 }
-
+                scroll();
                 break;
         case 4: // Редактирование трубы;
             if (!pipes.empty()) {
@@ -173,7 +169,7 @@ int main()
             save(pipes, css);
             break;
         case 7: // Загрузить
-            load(pipes, css,pipesCount,csCount);
+            load(pipes, css);
             break;
         default:
             cout << "[Такого действия не существует]" << endl;

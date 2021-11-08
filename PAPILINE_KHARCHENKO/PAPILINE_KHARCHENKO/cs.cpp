@@ -3,11 +3,14 @@
 #include "utils.h"
 using namespace std;
 
+unsigned int cs::count = 0;
+
 cs::cs()
 {
+    cs::count += 2;
 }
 
-cs::cs(int& id)
+cs::cs(unsigned int id)
 {
     cout << "[Добавление КС]" << endl;
     this->id = id;
@@ -25,10 +28,12 @@ cs::cs(int& id)
     cout << "Введите показатель эффективности: ";
     this->efficiency = getInt();
     cout << "[Компрессорная станция добавлена]" << endl;
+    cs::count += 2;
 }
 
 cs::~cs()
 {
+    cs::count--;
 }
 
 void cs::edit()
