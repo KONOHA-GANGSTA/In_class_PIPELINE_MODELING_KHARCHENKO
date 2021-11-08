@@ -1,19 +1,11 @@
-
 #include <iostream>
-#include <vector>
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#include "utils.h"
+#include "pipe.h"
 using namespace std;
 
-struct pipe {
-
-    unsigned int id;
-    double length;
-    int diametr;
-    bool isInRepair = false;
-
-};
 
 struct cs {
 
@@ -24,14 +16,6 @@ struct cs {
     int efficiency;
 
 };
-
-void printLine() {
-
-    for (int i = 0; i <= 100; i++) {
-        cout << "_";
-    }
-    cout << endl;
-}
 
 void scroll() {
     for (int i = 0; i <= 5; i++)
@@ -51,16 +35,6 @@ void printMenu() {
     cout << endl;
 }
 
-void printPipeHead() {
-
-    printLine();
-    cout << "|\tId"
-        << "\t|\tДлина"
-        << "\t|\tДиаметр"
-        << "\t|\tВ ремонте"
-        << "\t|" << endl;
-}
-
 void printCsHead() {
 
     printLine();
@@ -72,15 +46,6 @@ void printCsHead() {
         << "\t|" << endl;
 }
 
-void printPipe(const pipe& pipe) {
-    
-    cout << "|\t" << pipe.id
-        << "\t|\t" << pipe.length
-        << "\t|\t" << pipe.diametr
-        << "\t|\t" << pipe.isInRepair
-        << "\t\t|" << endl;
-}
-
 void printCs(const cs& cs) {
 
     cout << "|\t" << cs.id
@@ -89,91 +54,6 @@ void printCs(const cs& cs) {
         << "\t|\t" << cs.activeWorkshopNumber
         << "\t\t|\t" << cs.efficiency
         << "\t\t|" << endl;
-}
-
-string DotToComma(string& str) {
-
-    if (str.find(".") != string::npos)
-        return str.replace(str.find("."), 1, ",");
-    else return str;
-
-}
-
-int getInt(){
-	
-	while(true){
-
-		int number;
-		cin >> number;
-        if (cin.fail() || number < 0)
-        {   
-            cin.clear(); 
-            cin.ignore(32767, '\n');
-            cout << "[Значение некорректно]" << endl
-                << "Введите новое значение: ";
-        }
-        else
-        {
-            cin.ignore(32767, '\n');
-            return number;
-        }
-	}
-}
-
-double getDouble() {
-
-    while (true) {
-        double number;
-        cin >> number;
-        if (cin.fail() || number <0)
-        {
-            cin.clear();
-            cin.ignore(32767, '\n');
-            cout  << "[Значение некорректно]" << endl
-                << "Введите новое значение: ";
-        }
-        else
-        {
-            cin.ignore(32767, '\n');
-            return number;
-        }
-    }
-}
-
-bool confirm() {
-
-    string answer;
-    while (true) {
-        cin >> answer;
-        if (answer == "Y" || answer == "y") {
-            cin.ignore(32767, '\n');
-            return true;
-        }
-        else if (answer == "N" || answer == "n") {
-            cin.ignore(32767, '\n');
-            return false;
-        }
-        else {
-            cout << "[Некоректное значение]" << endl
-                << "Введите новое (Y/N): ";
-        }
-    }
-
-}
-
-pipe addPipe(int& id) {
-
-    cout << "[Добавление трубы]" << endl;
-    pipe pipe;
-    pipe.id = id;
-    cout << "Введите длину: ";
-    pipe.length = getDouble();
-    cout << "Введите диаметр: ";
-    pipe.diametr = getInt();
-    cout << "Сейчас в ремонте? (Y/N): ";
-    pipe.isInRepair = confirm();
-    cout << "[Труба добавлена]" << endl;
-    return pipe;
 }
 
 cs addCs(int& id) {
@@ -198,15 +78,6 @@ cs addCs(int& id) {
     return cs;
 }
 
-void editPipe(pipe& pipe) {
-
-    cout << "[Редактирование трубы]" << endl
-        << "Труба с id " << pipe.id << " в ремонте?(Y/N): ";
-    pipe.isInRepair = confirm();
-    cout << "[Изменения внесены]" << endl;
-    
-}
-
 void editCs(cs& cs) {
 
     cout << "[Редактирование компрессорной станции]" << endl
@@ -220,41 +91,18 @@ void editCs(cs& cs) {
     cout << "[Изменения внесены]" << endl;
 }
 
-string getFileName() {
-    string fileName;
-    string incorrectSymbols[16] = {" ","~","#","%","&","*","{","}","/",":","<",">","?","+","|","."};
-    while (true) {
-        cout << "Введите имя файла:" << endl;
-        getline(cin, fileName);
-        for (string i : incorrectSymbols) {
-            while (fileName.find(i) != string::npos) {
-                fileName.erase(fileName.find(i),1);
-            }
-        }
-        if (fileName == "") continue;
-        cout << endl;
-        return fileName;
-    }
-}
-
 void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     if ((pipes.empty()) && (css.empty()))
         return;
     ofstream file;
     file.open(getFileName()+".txt");
     if (file.good()) {
-        {
-            for (auto i : pipes) {
-                file << "pipe" << endl
-                    << i.second.id << endl
-                    << i.second.length << endl
-                    << i.second.diametr << endl
-                    << i.second.isInRepair << endl;
-            }
-        }
+        
+            for (auto& i : pipes)
+                file << "pipe" << endl << i.second;
 
         {
-            for (auto i : css) {
+            for (auto& i : css) {
                 file << "cs" << endl
                     << i.second.id << endl
                     << i.second.name << endl
@@ -268,8 +116,9 @@ void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     }
 }
 
-void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
-
+void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css,int& pipeNumber,int& csNumber) {
+    pipeNumber = 0;
+    csNumber = 0;
     pipes.clear();
     css.clear();
     ifstream file;
@@ -280,16 +129,9 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
             getline(file, str);
             if (str == "pipe") {
                 pipe pipe;
-                string value;
-                getline(file, value);
-                pipe.id = stoi(value);
-                getline(file, value);
-                pipe.length = stod(DotToComma(value));
-                getline(file, value);
-                pipe.diametr = stoi(value);
-                getline(file, value);
-                (value == "1") ? pipe.isInRepair = true : pipe.isInRepair = false;
+                file >> pipe;
                 pipes[pipe.id] = pipe;
+                pipeNumber++;
             }
 
             if (str == "cs") {
@@ -306,6 +148,7 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
                 getline(file, value);
                 cs.efficiency = stoi(value);
                 css[cs.id] = cs;
+                csNumber++;
             }
         }
         cout << "[Данные загружены]" << endl;
@@ -321,7 +164,6 @@ int main()
     unordered_map <int, cs> css;
     int pipesCount = 0;
     int csCount = 0;
-
     cout << "\t\t\tДобро пожаловать в систему моделирования трубопроводного транспорта" << endl;
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
 
@@ -337,7 +179,7 @@ int main()
             break;
         case 1: // Добавление трубы
             pipesCount++;
-            pipes.emplace(pipesCount, addPipe(pipesCount));
+            pipes.emplace(pipesCount, pipe(pipesCount));
             printLine();
             break;
         case 2: // Добавление КС
@@ -352,10 +194,10 @@ int main()
             }
             if (!pipes.empty()) {
                 cout << "[Трубы]" << endl;
-                printPipeHead();
+                pipe::printHead();
                 printLine();
-                for (pair<int, pipe> item : pipes) {
-                    printPipe(item.second);
+                for (auto& item : pipes) {
+                    cout << item.second;
                     printLine();
                 }
             }
@@ -384,7 +226,7 @@ int main()
                         break;
                     }
                     else
-                        editPipe(pipes[id]);
+                       pipes[id].edit();
                 }
             }
             else
@@ -412,7 +254,7 @@ int main()
             save(pipes, css);
             break;
         case 7: // Загрузить
-            load(pipes, css);
+            load(pipes, css,pipesCount,csCount);
             break;
         default:
             cout << "[Такого действия не существует]" << endl;
