@@ -3,11 +3,11 @@
 #include "utils.h"
 using namespace std;
 
-unsigned int cs::count = 0;
+unsigned int cs::max_id = 0;
 
 cs::cs()
 {
-    cs::count += 2;
+    ++cs::max_id;
 }
 
 cs::cs(unsigned int id)
@@ -28,12 +28,11 @@ cs::cs(unsigned int id)
     cout << "Введите показатель эффективности: ";
     this->efficiency = getInt();
     cout << "[Компрессорная станция добавлена]" << endl;
-    cs::count += 2;
+    +cs::max_id;
 }
 
 cs::~cs()
 {
-    cs::count--;
 }
 
 void cs::edit()

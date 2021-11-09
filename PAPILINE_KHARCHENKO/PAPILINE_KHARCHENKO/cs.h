@@ -3,16 +3,16 @@
 class cs
 {
 public:
-    unsigned int id;
+    unsigned int id;///
     std::string name;
     int workShopNumber;
     int activeWorkshopNumber;
     int efficiency;
-    static unsigned int count;
+    static unsigned int max_id;
 
     cs();
     cs(unsigned int id);
-    ~cs();
+    ~cs();//
 
     void edit();
     friend std::ostream& operator << (std::ostream& out, const cs& cs);

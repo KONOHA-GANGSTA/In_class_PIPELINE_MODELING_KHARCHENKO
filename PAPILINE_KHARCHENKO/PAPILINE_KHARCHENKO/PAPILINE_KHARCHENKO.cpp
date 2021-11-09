@@ -25,13 +25,19 @@ void printMenu() {
     cout << endl;
 }
 
+void editMenu() {
+    cout << "1. Редактировать" << endl 
+         << "2. Удалить" << endl
+         << "0. Назад" << endl;
+}
+
 void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     if ((pipes.empty()) && (css.empty()))
         return;
     ofstream file;
     file.open(getFileName()+".txt");
     if (file.good()) {
-        file << pipe::count << endl << cs::count << endl;
+        file << pipes.size() << endl << pipes.size() << endl;
             for (auto& i : pipes)
                 file << "pipe" << endl << i.second;
 
@@ -46,6 +52,8 @@ void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
 void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     pipes.clear();
     css.clear();
+    pipe::max_id = 0;
+    cs::max_id = 0;
     ifstream file;
     file.open(getFileName()+".txt", ios::in);
     if (file.good()) {
@@ -94,11 +102,11 @@ int main()
             return 0;
             break;
         case 1: // Добавление трубы
-            pipes.emplace(pipe::count+1, pipe(pipe::count+1));
+            pipes.emplace(pipe::max_id+1, pipe(pipe::max_id+1));
             printLine();
             break;
         case 2: // Добавление КС
-            css.emplace(cs::count+1, cs(cs::count+1));
+            css.emplace(cs::max_id + 1, cs(cs::max_id + 1));
             printLine();
             break;
         case 3: // Просмотр элементов;
@@ -108,7 +116,7 @@ int main()
                 break;
             }
             if (!pipes.empty()) {
-                cout << "[Трубы] : " << pipe::count << endl ;
+                cout << "[Трубы] : " << pipes.size()<< endl ;
                 pipe::printHead();
                 printLine();
                 for (auto& item : pipes) {
@@ -120,7 +128,7 @@ int main()
             cout << "\n\n\n";
 
             if (!css.empty()) {
-                cout << "[Компрессорные станции] : "<< cs::count << endl;
+                cout << "[Компрессорные станции] : "<< css.size() << endl;
                 cs::printHead();
                 printLine();
                 for (auto& item : css) {
@@ -140,8 +148,26 @@ int main()
                         scroll();
                         break;
                     }
-                    else
-                       pipes[id].edit();
+                    else {
+                        printLine();
+                        editMenu();
+                        printLine();
+                        cout << "Выберите действие: ";
+                        switch (getInt()) {
+                        case 1:
+                            pipes[id].edit();
+                            break;
+                        case 2:
+                            pipes.erase(id);
+                            cout << "[Труба удалена]" << endl;
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            cout << "[Такого действия не существует]" << endl;
+                            break;
+                        }
+                    }
                 }
             }
             else
@@ -158,8 +184,26 @@ int main()
                         scroll();
                         break;
                     }
-                    else
-                        css[id].edit();
+                    else {
+                        printLine();
+                        editMenu();
+                        printLine();
+                        cout << "Выберите действие: ";
+                        switch (getInt()) {
+                        case 1:
+                            css[id].edit();
+                            break;
+                        case 2:
+                            css.erase(id);
+                            cout << "[КС удалена]" << endl;
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            cout << "[Такого действия не существует]" << endl;
+                            break;
+                        }
+                    }  
                 }
             }
             else

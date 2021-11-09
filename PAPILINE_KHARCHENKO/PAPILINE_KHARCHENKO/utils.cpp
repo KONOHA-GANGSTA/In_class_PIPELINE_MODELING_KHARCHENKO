@@ -1,5 +1,10 @@
 #include "utils.h"
 
+#define CIN(X){\
+cin >> X;\
+cerr<<X<< endl;\
+}
+
 
 string DotToComma(string str) {
 
@@ -13,7 +18,7 @@ int getInt() {
 
     while (true) {
         int number;
-        cin >> number;
+        CIN(number);
         if (cin.fail() || number < 0)
         {
             cin.clear();
@@ -33,7 +38,7 @@ double getDouble() {
 
     while (true) {
         double number;
-        cin >> number;
+        CIN(number);
         if (cin.fail() || number < 0)
         {
             cin.clear();
@@ -53,7 +58,7 @@ bool confirm() {
 
     string answer;
     while (true) {
-        cin >> answer;
+        CIN(answer);
         if (answer == "Y" || answer == "y") {
             cin.ignore(32767, '\n');
             return true;
@@ -76,6 +81,7 @@ string getFileName() {
     while (true) {
         cout << "ֲגוהטעו טלÿ פאיכא:" << endl;
         getline(cin, fileName);
+        cerr << fileName;
         for (string i : incorrectSymbols) {
             while (fileName.find(i) != string::npos) {
                 fileName.erase(fileName.find(i), 1);

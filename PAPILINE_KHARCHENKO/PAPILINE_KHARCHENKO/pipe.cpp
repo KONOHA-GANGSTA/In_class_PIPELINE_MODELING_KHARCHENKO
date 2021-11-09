@@ -5,11 +5,11 @@
 #include <string>
 using namespace std;
 
-unsigned int pipe::count = 0;
+unsigned int pipe::max_id = 0;
 
 pipe::pipe()
 {
-    pipe::count+=2;
+    ++pipe::max_id;
 }
 
 
@@ -24,12 +24,12 @@ pipe::pipe(unsigned int id)
     cout << "Сейчас в ремонте? (Y/N): ";
     this -> isInRepair = confirm();
     cout << "[Труба добавлена]" << endl;
-    pipe::count+=2;
+    ++pipe::max_id;
 }
 
 pipe::~pipe()
 {
-    pipe::count--;
+    //pipe::count--;
 }
 
 void pipe::edit()
@@ -70,5 +70,3 @@ istream& operator >> (istream& file, pipe& pipe) {
     (getOneParam(value) == "1") ? pipe.isInRepair = true : pipe.isInRepair = false;
     return file;
 }
-
-
