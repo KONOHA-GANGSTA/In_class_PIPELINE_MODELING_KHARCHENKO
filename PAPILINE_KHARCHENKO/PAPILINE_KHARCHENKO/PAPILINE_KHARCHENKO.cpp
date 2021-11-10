@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "pipe.h"
 #include "cs.h"
+#include <vector>
 using namespace std;
 
 void scroll() {
@@ -20,15 +21,28 @@ void printMenu() {
     cout << "5. Редактировать КС" << endl;
     cout << "6. Сохранить" << endl;
     cout << "7. Загрузить" << endl;
+    cout << "8. Поиск" << endl;
     cout << "0. Выход" << endl;
     printLine();
     cout << endl;
 }
 
-void editMenu() {
+void printEditMenu() {
     cout << "1. Редактировать" << endl 
          << "2. Удалить" << endl
          << "0. Назад" << endl;
+}
+
+void printSearchMenu() {
+    cout << endl << "Найти оъекты" << endl;
+    printLine();
+    cout << "1. Трубы по состоянию" << endl
+        << "2. Трубы по диаметру" << endl
+        << "3. КС по названию" << endl
+        << "4. КС по проценту незадействованых цехов" << endl
+        << "0. Выход" << endl;
+        printLine();
+        cout << endl;
 }
 
 void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
@@ -79,6 +93,19 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
         cout << "[Данные загружены]" << endl;
     }
     file.close();
+}
+
+template <typename T, typename S>
+using Filter = bool(*)(const S& pipe, T param);
+
+template <typename T, typename S>
+static vector <int> findByFilter(const unordered_map<int, S>& pipes, Filter<T,S> f, T param) {
+    vector <int> keys;
+    for (auto& i : pipes) {
+        if (f(i.second, param))
+            keys.push_back(i.first);
+    }
+    return keys;
 }
 
 int main()
@@ -150,7 +177,7 @@ int main()
                     }
                     else {
                         printLine();
-                        editMenu();
+                        printEditMenu();
                         printLine();
                         cout << "Выберите действие: ";
                         switch (getInt()) {
@@ -186,7 +213,7 @@ int main()
                     }
                     else {
                         printLine();
-                        editMenu();
+                        printEditMenu();
                         printLine();
                         cout << "Выберите действие: ";
                         switch (getInt()) {
@@ -214,6 +241,76 @@ int main()
             break;
         case 7: // Загрузить
             load(pipes, css);
+            break;
+        case 8:
+            printSearchMenu();
+            cout << "Выберите действие: ";
+            switch (getInt()) {
+            case 0:
+                break;
+            case 1:
+            {   
+                int j = 0;
+                cout << "Показать трубы в ремонте?(Y/N): ";
+                for (int i : findByFilter(pipes, pipe::checkCondition, confirm())) {
+                    if (++j == 1) pipe::printHead();
+                    printLine();
+                    cout << pipes[i];
+                }
+                if (j == 0) cout << "[Таких нет]" << endl;
+                printLine();
+                scroll();
+                break;
+            }
+
+            case 2:
+            {   
+                int j = 0;
+                cout << "Введите искомый диаметр: ";
+                for (int i : findByFilter(pipes, pipe::checkDiam, getInt())) {
+                    if (++j == 1) pipe::printHead();
+                    printLine();
+                    cout << pipes[i];
+                }
+                if (j == 0) cout << "[Таких нет]" << endl;
+                printLine();
+                scroll();
+                break;
+            }
+            case 3:
+            {
+                int j = 0;
+                cout << "Введите искомое имя:"<< endl;
+                string name;
+                getline(cin, name);
+                for (int i : findByFilter(css, cs::checkName, name)) {
+                    if (++j == 1) cs::printHead();
+                    printLine();
+                    cout << css[i];
+                }
+                if (j == 0) cout << "[Таких нет]" << endl;
+                printLine();
+                scroll();
+                break;
+            }
+            case 4:
+            {
+                int j = 0;
+                cout << "Введите процент неактивных цехов: ";
+                for (int i : findByFilter(css, cs::checkPrecent, getInt())) {
+                    if (++j == 1) cs::printHead();
+                    printLine();
+                    cout << css[i];
+                }
+                if (j == 0) cout << "[Таких нет]" << endl;
+                printLine();
+                scroll();
+                break;
+            }
+            default:
+                cout << "[Такого действия не существует]" << endl;
+                break;
+            }
             break;
         default:
             cout << "[Такого действия не существует]" << endl;

@@ -12,11 +12,13 @@ public:
 
     cs();
     cs(unsigned int id);
-    ~cs();//
+    ~cs();
 
     void edit();
     friend std::ostream& operator << (std::ostream& out, const cs& cs);
     friend std::istream& operator >> (std::istream& out, cs& cs);
     static void printHead();
-};
 
+    static bool checkName(const cs& cs, std::string name);
+    static bool checkPrecent(const cs& cs, int percent);
+};

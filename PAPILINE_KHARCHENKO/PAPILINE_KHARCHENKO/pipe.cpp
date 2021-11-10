@@ -50,6 +50,16 @@ void pipe::printHead()
         << "\t|" << endl;
 }
 
+bool pipe::checkCondition(const pipe& pipe, bool condition)
+{
+    return pipe.isInRepair == condition;
+}
+
+bool pipe::checkDiam(const pipe& pipe, int diam)
+{
+    return diam == pipe.diametr;
+}
+
 ostream& operator << (ostream& out, const pipe& pipe) {
     
         out << "|\t" << pipe.id

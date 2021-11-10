@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <vector>
+#include <unordered_map>
 
 class pipe
 {
@@ -19,5 +21,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, const pipe& pipe);
     friend std::istream& operator >> (std::istream& out, pipe& pipe);
     static void printHead();
-    
+    static bool checkCondition(const pipe& pipe, bool condition);
+    static bool checkDiam(const pipe& pipe, int diam);
+ 
 };

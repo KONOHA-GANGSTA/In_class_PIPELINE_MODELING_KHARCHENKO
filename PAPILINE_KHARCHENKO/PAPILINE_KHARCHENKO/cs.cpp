@@ -28,7 +28,7 @@ cs::cs(unsigned int id)
     cout << "Введите показатель эффективности: ";
     this->efficiency = getInt();
     cout << "[Компрессорная станция добавлена]" << endl;
-    +cs::max_id;
+    ++cs::max_id;
 }
 
 cs::~cs()
@@ -58,6 +58,16 @@ void cs::printHead()
         << "\t|\tЭффективность"
         << "\t|" << endl;
 
+}
+
+bool cs::checkName(const cs& cs, string name)
+{
+    return cs.name.find(name)!=string::npos;
+}
+
+bool cs::checkPrecent(const cs& cs, int percent)
+{
+    return round(((double)(cs.workShopNumber-cs.activeWorkshopNumber)/cs.workShopNumber)*100) == percent;
 }
 
 std::ostream& operator<<(std::ostream& out, const cs& cs)
