@@ -22,6 +22,7 @@ void printMenu() {
     cout << "6. Сохранить" << endl;
     cout << "7. Загрузить" << endl;
     cout << "8. Поиск" << endl;
+    cout << "9. Пакетное редактирование" << endl;
     cout << "0. Выход" << endl;
     printLine();
     cout << endl;
@@ -30,6 +31,12 @@ void printMenu() {
 void printEditMenu() {
     cout << "1. Редактировать" << endl 
          << "2. Удалить" << endl
+         << "0. Назад" << endl;
+}
+
+void printMultiEditMenu() {
+    cout << "1. Редактировать трубы" << endl
+         << "2. Редактировать КС" << endl
          << "0. Назад" << endl;
 }
 
@@ -238,9 +245,13 @@ int main()
             break;
         case 6: // Сохранить
             save(pipes, css);
+            printLine();
+            scroll();
             break;
         case 7: // Загрузить
             load(pipes, css);
+            printLine();
+            scroll();
             break;
         case 8:
             printSearchMenu();
@@ -312,9 +323,86 @@ int main()
                 break;
             }
             break;
+        case 9: 
+        {
+            printLine();
+            printMultiEditMenu();
+            printLine();
+            cout << "Введите действие: ";
+            switch (getInt()) {
+            case 1:
+            {
+                printLine();
+                cout << "Редактировать те что в ремонте?(Y/N): ";
+                vector <int> keys = findByFilter(pipes, pipe::checkCondition, confirm());
+                if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
+                cout << "Найдено " << keys.size() << " труб" << endl;
+                printLine();
+                cout << "Редактировать поштучно?(Y/N): ";
+                if (confirm())
+                    for (int i : keys)
+                        pipes[i].edit();
+                else
+                    for (int i : keys)
+                        pipes[i].isInRepair = !pipes[i].isInRepair;
+                break;
+            }
+            case 2:
+            {
+                printLine();
+                cout << "1. По имени" << endl << "2. По проценту неактвных цехов" << endl<<"0. Выход" << endl;
+                printLine();
+                cout << "Введите действие: ";
+                switch (getInt()) {
+                case 1:
+                {
+                    printLine();
+                    cout << "Введите имя: ";
+                    string name;
+                    getline(cin, name);
+                    vector <int> keys = findByFilter(css, cs::checkName, name);
+                    if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
+                    cout << "Найдено " << keys.size() << " КС" << endl;
+                    printLine();
+                        for (int i : keys)
+                            css[i].edit();
+                }
+                    break;
+                case 2:
+                {
+                    printLine();
+                    cout << "Введите искомый процент: ";
+                    vector <int> keys = findByFilter(css, cs::checkPrecent, getInt());
+                    if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
+                    cout << "Найдено " << keys.size() << " КС" << endl;
+                    printLine();
+                    for (int i : keys)
+                        css[i].edit();
+                }
+                    break;
+                case 0:
+                    break;
+                default:
+                    cout << "[Такого действия не существует]" << endl;
+                    break;
+                }
+                break;
+            }
+            case 0:
+                break;
+            default:
+                cout << "[Такого действия не существует]" << endl;
+                break;
+            }
+            printLine();
+            scroll();
+            break;
+        }
         default:
+        {
             cout << "[Такого действия не существует]" << endl;
             break;
+        }
             }
             printLine();
             scroll();
