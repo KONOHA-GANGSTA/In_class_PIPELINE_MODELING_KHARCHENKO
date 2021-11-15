@@ -6,6 +6,7 @@
 #include "pipe.h"
 #include "cs.h"
 #include <vector>
+#include <set>
 using namespace std;
 
 void scroll() {
@@ -73,8 +74,6 @@ void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
 void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
     pipes.clear();
     css.clear();
-    pipe::max_id = 0;
-    cs::max_id = 0;
     ifstream file;
     file.open(getFileName()+".txt", ios::in);
     if (file.good()) {
@@ -136,13 +135,19 @@ int main()
             return 0;
             break;
         case 1: // Добавление трубы
-            pipes.emplace(pipe::max_id+1, pipe(pipe::max_id+1));
+        {   
+            pipe pipe;
+            pipes.emplace(pipe.id, pipe.create(pipe));
             printLine();
             break;
+        }
         case 2: // Добавление КС
-            css.emplace(cs::max_id + 1, cs(cs::max_id + 1));
+        {
+            cs cs;
+            css.emplace(cs.id, cs.create(cs));
             printLine();
             break;
+        }
         case 3: // Просмотр элементов;
             printLine();
             if (pipes.empty() && css.empty()) {
@@ -189,7 +194,7 @@ int main()
                         cout << "Выберите действие: ";
                         switch (getInt()) {
                         case 1:
-                            pipes[id].edit();
+                            pipes[id].edit(pipes[id].id);
                             break;
                         case 2:
                             pipes.erase(id);
@@ -341,7 +346,7 @@ int main()
                 cout << "Редактировать поштучно?(Y/N): ";
                 if (confirm())
                     for (int i : keys)
-                        pipes[i].edit();
+                        pipes[i].edit(pipes[i].id);
                 else
                     for (int i : keys)
                         pipes[i].isInRepair = !pipes[i].isInRepair;

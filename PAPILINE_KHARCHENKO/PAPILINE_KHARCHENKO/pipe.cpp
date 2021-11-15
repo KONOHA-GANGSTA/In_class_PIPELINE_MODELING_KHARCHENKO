@@ -7,35 +7,20 @@ using namespace std;
 
 unsigned int pipe::max_id = 0;
 
-pipe::pipe()
+pipe::pipe():id(++pipe::max_id)
 {
-    ++pipe::max_id;
 }
 
-
-pipe::pipe(unsigned int id)
-{
-    cout << "[Добавление трубы]" << endl;
-    this->id = id;
-    cout << "Введите длину: ";
-    this -> length = getDouble();
-    cout << "Введите диаметр: ";
-    this -> diametr = getInt();
-    cout << "Сейчас в ремонте? (Y/N): ";
-    this -> isInRepair = confirm();
-    cout << "[Труба добавлена]" << endl;
-    ++pipe::max_id;
-}
 
 pipe::~pipe()
 {
     //pipe::count--;
 }
 
-void pipe::edit()
+void pipe::edit(int id)
 {
     cout << "[Редактирование трубы]" << endl
-        << "Труба с id " << this -> id << " в ремонте?(Y/N): ";
+        << "Труба с id " << id << " в ремонте?(Y/N): ";
     this -> isInRepair = confirm();
     cout << "[Изменения внесены]" << endl;
 }
@@ -58,6 +43,19 @@ bool pipe::checkCondition(const pipe& pipe, bool condition)
 bool pipe::checkDiam(const pipe& pipe, int diam)
 {
     return diam == pipe.diametr;
+}
+
+pipe& pipe::create(pipe& pipe)
+{
+    cout << "[Добавление трубы]" << endl;
+    cout << "Введите длину: ";
+    pipe.length = getDouble();
+    cout << "Введите диаметр: ";
+    pipe.diametr = getInt();
+    cout << "Сейчас в ремонте? (Y/N): ";
+    pipe.isInRepair = confirm();
+    cout << "[Труба добавлена]" << endl;
+    return pipe;
 }
 
 ostream& operator << (ostream& out, const pipe& pipe) {
