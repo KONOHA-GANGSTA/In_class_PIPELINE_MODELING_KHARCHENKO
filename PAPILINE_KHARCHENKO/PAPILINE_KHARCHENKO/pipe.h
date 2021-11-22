@@ -6,9 +6,9 @@ class pipe
 {
 private:
     static unsigned int max_id;
-    
-public:
     unsigned int id;
+
+public:
     double length;
     int diametr;
     bool isInRepair;
@@ -22,5 +22,6 @@ public:
     static bool checkCondition(const pipe& pipe, bool condition);
     static bool checkDiam(const pipe& pipe, int diam);
     pipe& create(pipe& pipe);
+    unsigned int getId() { return id; };
  
 };

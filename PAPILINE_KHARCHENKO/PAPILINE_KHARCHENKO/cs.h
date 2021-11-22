@@ -4,8 +4,9 @@ class cs
 {
 private:
     static unsigned int max_id;
-public:
     unsigned int id;
+
+public:
     std::string name;
     int workShopNumber;
     int activeWorkshopNumber;
@@ -22,4 +23,5 @@ public:
     static bool checkName(const cs& cs, std::string name);
     static bool checkPrecent(const cs& cs, int percent);
     cs& create(cs& cs);
+    unsigned int getId() { return id; };
 };

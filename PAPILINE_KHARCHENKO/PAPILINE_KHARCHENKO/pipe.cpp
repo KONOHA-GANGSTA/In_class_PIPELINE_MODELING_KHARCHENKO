@@ -76,5 +76,6 @@ istream& operator >> (istream& file, pipe& pipe) {
     pipe.length = stod(DotToComma(getOneParam(value)));
     pipe.diametr = stoi(getOneParam(value));
     (getOneParam(value) == "1") ? pipe.isInRepair = true : pipe.isInRepair = false;
+    if (pipe.id > pipe::max_id) pipe::max_id = pipe.id;
     return file;
 }

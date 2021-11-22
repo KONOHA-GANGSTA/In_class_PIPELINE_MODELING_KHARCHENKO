@@ -88,5 +88,6 @@ std::istream& operator>>(std::istream& out, cs& cs)
     cs.workShopNumber = stoi(getOneParam(value));
     cs.activeWorkshopNumber = stoi(getOneParam(value));
     cs.efficiency = stoi(getOneParam(value));
+    if (cs.id > cs::max_id) cs::max_id = cs.id;
     return out;
 }

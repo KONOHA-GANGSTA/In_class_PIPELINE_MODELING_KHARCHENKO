@@ -87,13 +87,13 @@ void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
             if (str == "pipe") {
                 pipe pipe;
                 file >> pipe;
-                pipes.emplace(pipe.id, pipe);
+                pipes.emplace(pipe.getId(), pipe);
             }
 
             if (str == "cs") {
                 cs cs;
                 file >> cs;
-                css.emplace(cs.id, cs);
+                css.emplace(cs.getId(), cs);
             }
         }
         cout << "[Данные загружены]" << endl;
@@ -137,14 +137,14 @@ int main()
         case 1: // Добавление трубы
         {   
             pipe pipe;
-            pipes.emplace(pipe.id, pipe.create(pipe));
+            pipes.emplace(pipe.getId(), pipe.create(pipe));
             printLine();
             break;
         }
         case 2: // Добавление КС
         {
             cs cs;
-            css.emplace(cs.id, cs.create(cs));
+            css.emplace(cs.getId(), cs.create(cs));
             printLine();
             break;
         }
@@ -194,7 +194,7 @@ int main()
                         cout << "Выберите действие: ";
                         switch (getInt()) {
                         case 1:
-                            pipes[id].edit(pipes[id].id);
+                            pipes[id].edit(pipes[id].getId());
                             break;
                         case 2:
                             pipes.erase(id);
@@ -346,7 +346,7 @@ int main()
                 cout << "Редактировать поштучно?(Y/N): ";
                 if (confirm())
                     for (int i : keys)
-                        pipes[i].edit(pipes[i].id);
+                        pipes[i].edit(pipes[i].getId());
                 else
                     for (int i : keys)
                         pipes[i].isInRepair = !pipes[i].isInRepair;
