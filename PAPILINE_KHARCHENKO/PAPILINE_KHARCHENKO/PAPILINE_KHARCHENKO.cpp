@@ -343,13 +343,35 @@ int main()
                 if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
                 cout << "Найдено " << keys.size() << " труб" << endl;
                 printLine();
-                cout << "Редактировать поштучно?(Y/N): ";
-                if (confirm())
-                    for (int i : keys)
-                        pipes[i].edit(pipes[i].getId());
-                else
-                    for (int i : keys)
-                        pipes[i].isInRepair = !pipes[i].isInRepair;
+                cout << "Будем удалять?(Y/N) " << endl;
+                if (!confirm()) {
+                    cout << "Редактировать поштучно?(Y/N): ";
+                    if (confirm())
+                        for (int i : keys)
+                            pipes[i].edit(pipes[i].getId());
+                    else
+                        for (int i : keys)
+                            pipes[i].isInRepair = !pipes[i].isInRepair;
+                }
+                else {
+
+
+                    cout << "Удалить поштучно?(Y/N): ";
+                    if (confirm())
+                        for (int i : keys){
+                            pipe::printHead();
+                            printLine();
+                            cout << pipes[i];
+                            cout << "Удаляем?(Y/N) ";
+                            if(confirm())
+                            pipes.erase(i);}
+                    else
+                        for (int i : keys)
+                            pipes.erase(i);
+                            cout << "[Трубы удалены]" << endl;
+
+
+                }
                 break;
             }
             case 2:
