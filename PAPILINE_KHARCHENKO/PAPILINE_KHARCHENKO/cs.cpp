@@ -45,7 +45,7 @@ bool cs::checkName(const cs& cs, string name)
 
 bool cs::checkPrecent(const cs& cs, int percent)
 {
-    return round(((double)(cs.workShopNumber-cs.activeWorkshopNumber)/cs.workShopNumber)*100) == percent;
+    return round(((double)(cs.workShopNumber-cs.activeWorkshopNumber)/cs.workShopNumber)*100) > percent;
 }
 
 cs& cs::create(cs& cs)

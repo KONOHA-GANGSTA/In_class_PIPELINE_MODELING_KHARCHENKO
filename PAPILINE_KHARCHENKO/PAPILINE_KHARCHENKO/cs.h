@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <set>
+
 class cs
 {
 private:
@@ -11,6 +13,8 @@ public:
     int workShopNumber;
     int activeWorkshopNumber;
     int efficiency;
+    std::set <int> incom;
+    std::set <int> outcom;
 
     cs();
     ~cs();

@@ -6,7 +6,8 @@
 #include "pipe.h"
 #include "cs.h"
 #include <vector>
-#include <set>
+#include  "GTS.h"
+
 using namespace std;
 
 void scroll() {
@@ -53,54 +54,6 @@ void printSearchMenu() {
         cout << endl;
 }
 
-void save(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
-    if ((pipes.empty()) && (css.empty()))
-        return;
-    ofstream file;
-    file.open(getFileName()+".txt");
-    if (file.good()) {
-        file << pipes.size() << endl << pipes.size() << endl;
-            for (auto& i : pipes)
-                file << "pipe" << endl << i.second;
-
-            for (auto& i : css)
-                file << "cs" << endl << i.second;
-
-        file.close();
-        cout << "[Данные сохранены]" << endl;
-    }
-}
-
-void load(unordered_map <int,pipe>& pipes, unordered_map <int, cs>& css) {
-    pipes.clear();
-    css.clear();
-    ifstream file;
-    file.open(getFileName()+".txt", ios::in);
-    if (file.good()) {
-        string str;
-        getline(file, str);
-        pipes.reserve(stoi(str));
-        getline(file, str);
-        css.reserve(stoi(str));
-        while (!file.eof()) {
-            getline(file, str);
-            if (str == "pipe") {
-                pipe pipe;
-                file >> pipe;
-                pipes.emplace(pipe.getId(), pipe);
-            }
-
-            if (str == "cs") {
-                cs cs;
-                file >> cs;
-                css.emplace(cs.getId(), cs);
-            }
-        }
-        cout << "[Данные загружены]" << endl;
-    }
-    file.close();
-}
-
 template <typename T, typename S>
 using Filter = bool(*)(const S& pipe, T param);
 
@@ -118,9 +71,9 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    unordered_map <int, pipe> pipes;
-    unordered_map <int, cs> css;
-
+    //unordered_map <int, pipe> pipes;
+    //unordered_map <int, cs> css;
+    GTS GTS;
     cout << "\t\t\tДобро пожаловать в систему моделирования трубопроводного транспорта" << endl;
     cout << "\t\t\t\t\t\t (©) Харченко АА-20-05 2021г.\n\n\n";
 
@@ -137,28 +90,28 @@ int main()
         case 1: // Добавление трубы
         {   
             pipe pipe;
-            pipes.emplace(pipe.getId(), pipe.create(pipe));
+            GTS.pipes.emplace(pipe.getId(), pipe.create(pipe));
             printLine();
             break;
         }
         case 2: // Добавление КС
         {
             cs cs;
-            css.emplace(cs.getId(), cs.create(cs));
+            GTS.css.emplace(cs.getId(), cs.create(cs));
             printLine();
             break;
         }
         case 3: // Просмотр элементов;
             printLine();
-            if (pipes.empty() && css.empty()) {
+            if (GTS.pipes.empty() && GTS.css.empty()) {
                 cout << "[Объектов нет]" << endl;
                 break;
             }
-            if (!pipes.empty()) {
-                cout << "[Трубы] : " << pipes.size()<< endl ;
+            if (!GTS.pipes.empty()) {
+                cout << "[Трубы] : " << GTS.pipes.size()<< endl ;
                 pipe::printHead();
                 printLine();
-                for (auto& item : pipes) {
+                for (auto& item : GTS.pipes) {
                     cout << item.second;
                     printLine();
                 }
@@ -166,23 +119,23 @@ int main()
 
             cout << "\n\n\n";
 
-            if (!css.empty()) {
-                cout << "[Компрессорные станции] : "<< css.size() << endl;
+            if (!GTS.css.empty()) {
+                cout << "[Компрессорные станции] : "<< GTS.css.size() << endl;
                 cs::printHead();
                 printLine();
-                for (auto& item : css) {
+                for (auto& item : GTS.css) {
                     cout << item.second;
                     printLine();
                 }
                 scroll();
                 break;
         case 4: // Редактирование трубы;
-            if (!pipes.empty()) {
+            if (!GTS.pipes.empty()) {
                 while (true) {
                     printLine();
                     cout << "Для выхода введите 0\nВведите id трубы: ";
                     int id = getInt();
-                    if (id == 0 || pipes.find(id) == pipes.end())
+                    if (id == 0 || GTS.pipes.find(id) == GTS.pipes.end())
                     {
                         scroll();
                         break;
@@ -194,10 +147,10 @@ int main()
                         cout << "Выберите действие: ";
                         switch (getInt()) {
                         case 1:
-                            pipes[id].edit(pipes[id].getId());
+                            GTS.pipes[id].edit(GTS.pipes[id].getId());
                             break;
                         case 2:
-                            pipes.erase(id);
+                            GTS.pipes.erase(id);
                             cout << "[Труба удалена]" << endl;
                             break;
                         case 0:
@@ -213,12 +166,12 @@ int main()
                 cout << "[Труб нет]" << endl;
             break;
         case 5: // Редактирование КС
-            if (!css.empty()) {
+            if (!GTS.css.empty()) {
                 while (true) {
                     printLine();
                     cout << "Для выхода введите 0\nВведите id КС: ";
                     int id = getInt();
-                    if (id == 0 || css.find(id) == css.end())
+                    if (id == 0 || GTS.css.find(id) == GTS.css.end())
                     {
                         scroll();
                         break;
@@ -230,10 +183,10 @@ int main()
                         cout << "Выберите действие: ";
                         switch (getInt()) {
                         case 1:
-                            css[id].edit();
+                            GTS.css[id].edit();
                             break;
                         case 2:
-                            css.erase(id);
+                            GTS.css.erase(id);
                             cout << "[КС удалена]" << endl;
                             break;
                         case 0:
@@ -249,29 +202,29 @@ int main()
                 cout << "[Компрессорных станций нет]" << endl;
             break;
         case 6: // Сохранить
-            save(pipes, css);
+            GTS.load();
             printLine();
             scroll();
             break;
         case 7: // Загрузить
-            load(pipes, css);
+            GTS.load();
             printLine();
             scroll();
             break;
-        case 8:
+        case 8: // Поиск
             printSearchMenu();
             cout << "Выберите действие: ";
             switch (getInt()) {
             case 0:
                 break;
-            case 1:
+            case 1: // Поиск труб по ремонту
             {   
                 int j = 0;
                 cout << "Показать трубы в ремонте?(Y/N): ";
-                for (int i : findByFilter(pipes, pipe::checkCondition, confirm())) {
+                for (int i : findByFilter(GTS.pipes, pipe::checkCondition, confirm())) {
                     if (++j == 1) pipe::printHead();
                     printLine();
-                    cout << pipes[i];
+                    cout << GTS.pipes[i];
                 }
                 if (j == 0) cout << "[Таких нет]" << endl;
                 printLine();
@@ -279,44 +232,44 @@ int main()
                 break;
             }
 
-            case 2:
+            case 2: // Поиск труб по диаметру
             {   
                 int j = 0;
                 cout << "Введите искомый диаметр: ";
-                for (int i : findByFilter(pipes, pipe::checkDiam, getInt())) {
+                for (int i : findByFilter(GTS.pipes, pipe::checkDiam, getInt())) {
                     if (++j == 1) pipe::printHead();
                     printLine();
-                    cout << pipes[i];
+                    cout << GTS.pipes[i];
                 }
                 if (j == 0) cout << "[Таких нет]" << endl;
                 printLine();
                 scroll();
                 break;
             }
-            case 3:
+            case 3: // Поиск КС по имени
             {
                 int j = 0;
                 cout << "Введите искомое имя:"<< endl;
                 string name;
                 getline(cin, name);
-                for (int i : findByFilter(css, cs::checkName, name)) {
+                for (int i : findByFilter(GTS.css, cs::checkName, name)) {
                     if (++j == 1) cs::printHead();
                     printLine();
-                    cout << css[i];
+                    cout << GTS.css[i];
                 }
                 if (j == 0) cout << "[Таких нет]" << endl;
                 printLine();
                 scroll();
                 break;
             }
-            case 4:
+            case 4: // Поиск КС по проценту незадействованых цехов
             {
                 int j = 0;
                 cout << "Введите процент неактивных цехов: ";
-                for (int i : findByFilter(css, cs::checkPrecent, getInt())) {
+                for (int i : findByFilter(GTS.css, cs::checkPrecent, getInt())) {
                     if (++j == 1) cs::printHead();
                     printLine();
-                    cout << css[i];
+                    cout << GTS.css[i];
                 }
                 if (j == 0) cout << "[Таких нет]" << endl;
                 printLine();
@@ -328,18 +281,18 @@ int main()
                 break;
             }
             break;
-        case 9: 
+        case 9: // Пакетное редактирование
         {
             printLine();
             printMultiEditMenu();
             printLine();
             cout << "Введите действие: ";
             switch (getInt()) {
-            case 1:
+            case 1: // Редактирование труб по ремонту
             {
                 printLine();
                 cout << "Редактировать те что в ремонте?(Y/N): ";
-                vector <int> keys = findByFilter(pipes, pipe::checkCondition, confirm());
+                vector <int> keys = findByFilter(GTS.pipes, pipe::checkCondition, confirm());
                 if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
                 cout << "Найдено " << keys.size() << " труб" << endl;
                 printLine();
@@ -348,10 +301,10 @@ int main()
                     cout << "Редактировать поштучно?(Y/N): ";
                     if (confirm())
                         for (int i : keys)
-                            pipes[i].edit(pipes[i].getId());
+                            GTS.pipes[i].edit(GTS.pipes[i].getId());
                     else
                         for (int i : keys)
-                            pipes[i].isInRepair = !pipes[i].isInRepair;
+                            GTS.pipes[i].isInRepair = !GTS.pipes[i].isInRepair;
                 }
                 else {
 
@@ -361,20 +314,20 @@ int main()
                         for (int i : keys){
                             pipe::printHead();
                             printLine();
-                            cout << pipes[i];
+                            cout << GTS.pipes[i];
                             cout << "Удаляем?(Y/N) ";
                             if(confirm())
-                            pipes.erase(i);}
+                            GTS.pipes.erase(i);}
                     else
                         for (int i : keys)
-                            pipes.erase(i);
+                            GTS.pipes.erase(i);
                             cout << "[Трубы удалены]" << endl;
 
 
                 }
                 break;
             }
-            case 2:
+            case 2: // Редактирование КС
             {
                 printLine();
                 cout << "1. По имени" << endl << "2. По проценту неактвных цехов" << endl<<"0. Выход" << endl;
@@ -387,24 +340,24 @@ int main()
                     cout << "Введите имя: ";
                     string name;
                     getline(cin, name);
-                    vector <int> keys = findByFilter(css, cs::checkName, name);
+                    vector <int> keys = findByFilter(GTS.css, cs::checkName, name);
                     if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
                     cout << "Найдено " << keys.size() << " КС" << endl;
                     printLine();
                         for (int i : keys)
-                            css[i].edit();
+                            GTS.css[i].edit();
                 }
                     break;
                 case 2:
                 {
                     printLine();
                     cout << "Введите искомый процент: ";
-                    vector <int> keys = findByFilter(css, cs::checkPrecent, getInt());
+                    vector <int> keys = findByFilter(GTS.css, cs::checkPrecent, getInt());
                     if (keys.size() == 0) { cout << "[Таких нет]" << endl; break; }
                     cout << "Найдено " << keys.size() << " КС" << endl;
                     printLine();
                     for (int i : keys)
-                        css[i].edit();
+                        GTS.css[i].edit();
                 }
                     break;
                 case 0:
