@@ -3,6 +3,7 @@
 #include <iostream>
 #include "utils.h"
 #include <string>
+#include  "GTS.h"
 using namespace std;
 
 unsigned int pipe::max_id = 0;
@@ -19,6 +20,10 @@ pipe::~pipe()
 
 void pipe::edit(int id)
 {
+    if (GTS::ocupiedPipes.find(id) != GTS::ocupiedPipes.end()) {
+        cout << "[Данная труба находится в эксплуатации]" << endl;
+        return;
+    }
     cout << "[Редактирование трубы]" << endl
         << "Труба с id " << id << " в ремонте?(Y/N): ";
     this -> isInRepair = confirm();

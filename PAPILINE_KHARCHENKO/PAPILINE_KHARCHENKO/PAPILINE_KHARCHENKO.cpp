@@ -7,6 +7,7 @@
 #include "cs.h"
 #include <vector>
 #include  "GTS.h"
+#include "graphStuff.h"
 
 using namespace std;
 
@@ -21,10 +22,13 @@ void printMenu() {
     cout << "3. Просмотр всех объектов" << endl;
     cout << "4. Редактировать трубу" << endl;
     cout << "5. Редактировать КС" << endl;
-    cout << "6. Сохранить" << endl;
-    cout << "7. Загрузить" << endl;
+    cout << "6. Сохранить ГТС" << endl;
+    cout << "7. Загрузить ГТС" << endl;
     cout << "8. Поиск" << endl;
     cout << "9. Пакетное редактирование" << endl;
+    cout << "10. Проложить трубу" << endl;
+    cout << "11. Разорвать сообщение" << endl;
+    cout << "12. Топологическая сортировка" << endl;
     cout << "0. Выход" << endl;
     printLine();
     cout << endl;
@@ -150,6 +154,10 @@ int main()
                             GTS.pipes[id].edit(GTS.pipes[id].getId());
                             break;
                         case 2:
+                            if (GTS::ocupiedPipes.find(id) != GTS::ocupiedPipes.end()) {
+                                cout << "[Данная труба находится в эксплуатации]" << endl;
+                                break;
+                            }
                             GTS.pipes.erase(id);
                             cout << "[Труба удалена]" << endl;
                             break;
@@ -186,6 +194,10 @@ int main()
                             GTS.css[id].edit();
                             break;
                         case 2:
+                            if (GTS::ocupiedCss.find(id) != GTS::ocupiedCss.end()) {
+                                cout << "[Данная KC находится в эксплуатации]" << endl;
+                                break;
+                            }
                             GTS.css.erase(id);
                             cout << "[КС удалена]" << endl;
                             break;
@@ -202,7 +214,7 @@ int main()
                 cout << "[Компрессорных станций нет]" << endl;
             break;
         case 6: // Сохранить
-            GTS.load();
+            GTS.save();
             printLine();
             scroll();
             break;
@@ -378,9 +390,44 @@ int main()
             scroll();
             break;
         }
+        case 10:
+        {
+            int out, pipeId, in;
+            cout << "Введите из какой КС(id): ";
+            out = getInt();
+            cout << "Введите какой трубой соединить(id): ";
+            pipeId = getInt();
+            cout << "Введите к какой КС подвести(id): ";
+            in = getInt();
+            GTS.connect(out, pipeId, in);
+            printLine();
+            scroll();
+            break;
+        }
+        case 11: {
+            int inCs, outCs;
+            cout << "От какой станции идёт труба?(id): ";
+            outCs = getInt();
+            cout << "К какой станции идёт труба?(id): ";
+            inCs = getInt();
+            GTS.disconnect(outCs, inCs);
+            printLine();
+            scroll();
+            break;
+        }
+        case 12: {
+            for (auto& i : topSort(GTS)) {
+                cout << i.first << " : Станция <" << GTS.css[i.second].name <<"> (id:" << i.second << ")" << endl;
+            }
+            printLine();
+            scroll();
+            break;
+        }
         default:
         {
             cout << "[Такого действия не существует]" << endl;
+            printLine();
+            scroll();
             break;
         }
             }

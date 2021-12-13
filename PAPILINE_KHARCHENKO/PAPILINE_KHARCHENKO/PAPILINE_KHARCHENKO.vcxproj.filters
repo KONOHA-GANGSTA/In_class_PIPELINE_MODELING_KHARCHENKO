@@ -30,6 +30,9 @@
     <ClCompile Include="GTS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="graphStuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pipe.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GTS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphStuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cs.cpp" />
+    <ClCompile Include="graphStuff.cpp" />
     <ClCompile Include="GTS.cpp" />
     <ClCompile Include="PAPILINE_KHARCHENKO.cpp" />
     <ClCompile Include="pipe.cpp" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cs.h" />
+    <ClInclude Include="graphStuff.h" />
     <ClInclude Include="GTS.h" />
     <ClInclude Include="pipe.h" />
     <ClInclude Include="utils.h" />
