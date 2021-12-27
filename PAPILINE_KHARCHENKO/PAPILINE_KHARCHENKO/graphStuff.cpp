@@ -21,6 +21,15 @@ std::unordered_map <int, std::vector<double>> getMatWeights(GTS& GTS)
 	return result;
 }
 
+int toWhere(int fin, GTS& GTS) {
+	int result = -1;
+	for (auto& i : GTS::matWeights) {
+		result++;
+		if (fin == i.first) break;
+	}
+	return result;
+}
+
 std::map<int,std::vector <int>> getMapSmej(GTS& GTS)
 {
 	std::map <int, std::vector<int>> mapSmej;
@@ -99,6 +108,30 @@ std::unordered_map<int, double> dickstra(int startId, GTS& GTS)
 		done.insert(activeVer);
 	}
 	return result;
+}
+
+std::vector<int> seqReturn(int finish, std::unordered_map<int, double> ways, GTS& GTS)
+{
+	std::vector <int> result,swaped_result;
+	std::vector <int> possibleAncestors;
+	int current = finish;
+	while (ways[current] != 0) {
+		std::map<int, std::vector<int>>mapSmej = getMapSmej(GTS);
+		for (auto& i : mapSmej)
+			for (int j : i.second)
+				if (j == current)
+					possibleAncestors.push_back(i.first);
+		for (int i : possibleAncestors)
+			if (ways[current] - GTS::matWeights[i][toWhere(current, GTS)] == ways[i]) {
+				result.push_back(i);
+				current = i;
+				break;
+			}
+	}
+	for (int i = result.size() - 1; i >= 0; --i) {
+		swaped_result.push_back(result[i]);
+	}
+	return swaped_result;
 }
 
 std::map<int, int> topSort(GTS& GTS)

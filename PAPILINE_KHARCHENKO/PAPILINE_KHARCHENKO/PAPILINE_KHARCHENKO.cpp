@@ -29,6 +29,7 @@ void printMenu() {
     cout << "10. Проложить трубу" << endl;
     cout << "11. Разорвать сообщение" << endl;
     cout << "12. Топологическая сортировка" << endl;
+    cout << "13. Кратчайший путь" << endl;
     cout << "0. Выход" << endl;
     printLine();
     cout << endl;
@@ -130,6 +131,32 @@ int main()
                 for (auto& item : GTS.css) {
                     cout << item.second;
                     printLine();
+                }
+
+                cout << "\n\n\n";
+
+
+                if (GTS::ocupiedCss.size() != 0) {
+                    if (GTS::changed) {
+                        GTS::matWeights = getMatWeights(GTS);
+                        GTS::changed = false;
+                    }
+                    cout << "[Связи]" << endl;
+                    printLine();
+                    cout << "\t\t|\t";
+                    for (int i : GTS::ocupiedCss) {
+                        cout << i << "\t|\t";
+                    }
+                    cout << endl;
+                    printLine();
+                    for (auto& i : GTS::matWeights) {
+                        cout << "\t" << i.first << "\t|";
+                        for (double& j : i.second) {
+                            cout << "\t" << j << "\t|";
+                        }                    
+                        cout << endl;
+                        printLine();
+                    }
                 }
                 scroll();
                 break;
@@ -423,15 +450,29 @@ int main()
             scroll();
             break;
         }
+        case 13: {
+            printLine();
+            cout << "Откуда (id):";
+            int start = getInt();
+            cout << "Куда (id):";
+            int finish = getInt();
+            if ((GTS::ocupiedCss.find(start) != GTS::ocupiedCss.end()) & (GTS::ocupiedCss.find(finish) != GTS::ocupiedCss.end())) {
+                unordered_map <int, double> ways = dickstra(start, GTS);
+                for (int i : seqReturn(finish, ways, GTS)) {
+                    cout << "<" << GTS.css[i].name << ">(id:" << i << ")---> ";
+                }
+                if (ways.size() != 0) {
+                    cout << "<" << GTS.css[finish].name << ">(id:" << finish << ")" << endl;
+                    cout << "Длинна пути: " << ways[finish] << " км" << endl;
+                }
+            }
+            else cout << "[Ошибка в исходных данных]" << endl;
+            printLine();
+            scroll();
+            break;
+        }
         default:
         {
-            
-            /// <summary>
-            for (auto& i : dickstra(1,GTS)) {
-                
-                cout << i.first << " : " << i.second << endl;
-            }
-            /// 
             cout << "[Такого действия не существует]" << endl;
             printLine();
             scroll();

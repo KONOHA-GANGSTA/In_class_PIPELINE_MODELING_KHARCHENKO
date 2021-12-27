@@ -16,3 +16,6 @@ void eraseVer(std::map<int, std::vector<int>>& map, int idVer);
 
 std::unordered_map<int, double> dickstra(int startId, GTS& GTS);
 
+std::vector <int> seqReturn(int finish,std::unordered_map<int, double>,GTS& GTS);
+
+int toWhere(int fin, GTS& GTS);
