@@ -5,6 +5,8 @@
 
 set <int> GTS::ocupiedPipes;
 set<int> GTS:: ocupiedCss;
+bool GTS::changed = true;
+unordered_map <int, std::vector <double>> GTS::matWeights;
 
 void GTS::save() {
     if ((this->pipes.empty()) && (this->css.empty()))
@@ -93,6 +95,7 @@ void GTS::load()
         cout << "[Данные загружены]" << endl;
     }
     file.close();
+    GTS::changed = true;
 }
 
 void GTS::connect(int outCs, int pipeId, int inCs)
@@ -130,6 +133,7 @@ void GTS::connect(int outCs, int pipeId, int inCs)
     GTS::ocupiedCss.emplace(outCs);
     this->css[outCs].outcom.emplace(pipeId);
     this->css[inCs].incom.emplace(pipeId);
+    GTS::changed = true;
     cout << "[Труба проложена]" << endl;
 }
 
@@ -158,5 +162,6 @@ void GTS::disconnect(int outCs, int inCs)
         GTS::ocupiedCss.erase(outCs);
     if ((this->css[inCs].incom.size() == 0) & (this->css[inCs].outcom.size() == 0))
         GTS::ocupiedCss.erase(inCs);
+    GTS::changed = true;
     cout << "[Сообщение между станциями разорвано]" << endl;
 }

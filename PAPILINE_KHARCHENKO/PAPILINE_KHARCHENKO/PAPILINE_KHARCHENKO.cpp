@@ -425,6 +425,13 @@ int main()
         }
         default:
         {
+            
+            /// <summary>
+            for (auto& i : dickstra(1,GTS)) {
+                
+                cout << i.first << " : " << i.second << endl;
+            }
+            /// 
             cout << "[Такого действия не существует]" << endl;
             printLine();
             scroll();

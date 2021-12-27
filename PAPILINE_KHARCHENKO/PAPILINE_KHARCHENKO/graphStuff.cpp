@@ -2,15 +2,24 @@
 #include <set>
 #include <vector>
 
-//void getMatSmej(GTS& GTS)
-//{
-//	int** mat;
-//	mat = new int *[GTS::ocupiedCss.size()];
-//	for (int i = 0; i < GTS::ocupiedCss.size();++i) {
-//		mat[i] = new int[GTS::ocupiedCss.size()];
-//	}
-//}
 
+
+std::unordered_map <int, std::vector<double>> getMatWeights(GTS& GTS)
+{
+	std::unordered_map <int, std::vector<double>> result;
+	double weight = 0;
+	for (int i : GTS::ocupiedCss) {
+		for (int j : GTS::ocupiedCss) {
+			weight = 0;
+			for (int k : GTS.css[i].outcom)
+				if (destination(GTS, k) == j)
+					weight = GTS.pipes[k].length;
+			result[i].push_back(weight);
+		}
+	}
+	GTS::changed = false;
+	return result;
+}
 
 std::map<int,std::vector <int>> getMapSmej(GTS& GTS)
 {
@@ -47,6 +56,49 @@ void eraseVer(std::map<int, std::vector<int>>& map, int idVer) {
 		}
 		if (deleted) i.second.erase(i.second.begin() + index);
 	}
+}
+
+std::unordered_map<int, double> dickstra(int startId, GTS& GTS)
+{
+	std::unordered_map<int, double> result;
+	std::set <int> done;
+	if (GTS::ocupiedCss.find(startId) == GTS::ocupiedCss.end()) {
+		std::cout << "[В данной сети отсутствует указанная КС]" << std::endl;
+		return result;
+	}
+
+	if (GTS::changed)
+		GTS::matWeights = getMatWeights(GTS);
+	
+	for (int i : GTS::ocupiedCss) {
+		if (i == startId)
+			result.emplace(i, 0);
+		else
+			result.emplace(i, 4000000);
+	}
+	
+	while (done.size() != result.size()) {
+		double min = 4000001;
+		int activeVer;
+		for (auto& i : result) {
+			if (done.find(i.first) != done.end())
+				continue;
+			if (i.second < min) {
+				min = i.second;
+				activeVer = i.first;
+			}
+		}
+		int itr = 0;
+		for (int i : GTS::ocupiedCss) {
+			if (done.find(i) != done.end()) { itr++; continue; }
+			if ((result[i] > GTS::matWeights[activeVer][itr])&(GTS::matWeights[activeVer][itr]!=0))
+				if (result[i] == 4000000) result[i] = result[activeVer] + GTS::matWeights[activeVer][itr];
+				else result[i] = result[activeVer]+ GTS::matWeights[activeVer][itr];
+			itr++;
+		}
+		done.insert(activeVer);
+	}
+	return result;
 }
 
 std::map<int, int> topSort(GTS& GTS)

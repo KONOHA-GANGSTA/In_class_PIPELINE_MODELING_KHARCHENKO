@@ -14,6 +14,8 @@ class GTS
 
 	static std::set<int> ocupiedPipes;
 	static std::set<int> ocupiedCss;
+	static std::unordered_map <int, std::vector <double>> matWeights;
+	static bool changed;
 
 	void connect(int outCs, int pipe, int inCs);
 	void disconnect(int outCs, int inCs);
